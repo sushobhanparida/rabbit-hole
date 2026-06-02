@@ -59,6 +59,7 @@ export async function GET(req: Request) {
 
     return NextResponse.json({ topics })
   } catch (err) {
+    console.error("[/api/sync/collection] error:", err)
     return NextResponse.json({ error: String(err) }, { status: 500 })
   }
 }
@@ -88,6 +89,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ saved: data })
   } catch (err) {
+    console.error("[/api/sync/collection] error:", err)
     return NextResponse.json({ error: String(err) }, { status: 500 })
   }
 }

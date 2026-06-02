@@ -42,6 +42,7 @@ export async function POST(req: Request) {
     if (error) throw error
     return NextResponse.json({ vote: data })
   } catch (err) {
+    console.error("[/api/sync/vote] error:", err)
     return NextResponse.json({ error: String(err) }, { status: 500 })
   }
 }

@@ -58,6 +58,7 @@ export async function POST(req: Request) {
     if (error) throw error
     return NextResponse.json({ recentTopic: data })
   } catch (err) {
+    console.error("[/api/sync/recent-topics] error:", err)
     return NextResponse.json({ error: String(err) }, { status: 500 })
   }
 }
@@ -82,6 +83,7 @@ export async function GET(req: Request) {
     if (error) throw error
     return NextResponse.json({ recentTopics: data })
   } catch (err) {
+    console.error("[/api/sync/recent-topics] error:", err)
     return NextResponse.json({ error: String(err) }, { status: 500 })
   }
 }

@@ -63,6 +63,7 @@ export async function POST(req: Request) {
     if (error) throw error
     return NextResponse.json({ progress: data })
   } catch (err) {
+    console.error("[/api/sync/progress] error:", err)
     return NextResponse.json({ error: String(err) }, { status: 500 })
   }
 }
@@ -86,6 +87,7 @@ export async function GET(req: Request) {
     if (error) throw error
     return NextResponse.json({ progress: data })
   } catch (err) {
+    console.error("[/api/sync/progress] error:", err)
     return NextResponse.json({ error: String(err) }, { status: 500 })
   }
 }

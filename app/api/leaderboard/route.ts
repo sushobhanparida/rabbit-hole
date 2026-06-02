@@ -70,6 +70,7 @@ export async function GET(req: Request) {
 
     return NextResponse.json({ leaderboard, currentUser })
   } catch (err) {
+    console.error("[/api/leaderboard] error:", err)
     return NextResponse.json({ error: String(err) }, { status: 500 })
   }
 }

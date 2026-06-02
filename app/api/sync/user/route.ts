@@ -65,6 +65,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ user: data })
   } catch (err) {
+    console.error("[/api/sync/user] error:", err)
     return NextResponse.json({ error: String(err) }, { status: 500 })
   }
 }
@@ -83,6 +84,7 @@ export async function GET(req: Request) {
     if (error) throw error
     return NextResponse.json({ user: data })
   } catch (err) {
+    console.error("[/api/sync/user] error:", err)
     return NextResponse.json({ error: String(err) }, { status: 500 })
   }
 }

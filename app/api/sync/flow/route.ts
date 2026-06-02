@@ -54,6 +54,7 @@ export async function POST(req: Request) {
     if (error) throw error
     return NextResponse.json({ flow: data })
   } catch (err) {
+    console.error("[/api/sync/flow] error:", err)
     return NextResponse.json({ error: String(err) }, { status: 500 })
   }
 }
@@ -81,6 +82,7 @@ export async function GET(req: Request) {
     if (error) throw error
     return NextResponse.json({ flow: data })
   } catch (err) {
+    console.error("[/api/sync/flow] error:", err)
     return NextResponse.json({ error: String(err) }, { status: 500 })
   }
 }
