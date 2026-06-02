@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server"
 import { createAdminClient } from "@/lib/supabase/admin"
+import crypto from "crypto"
 
-async function hashPassword(password: string) {
-  return await crypto.subtle.digest("SHA-256", new TextEncoder().encode(password)).then((h) =>
-    Array.from(new Uint8Array(h)).map((b) => b.toString(16).padStart(2, "0")).join("")
-  )
+function hashPassword(password: string): string {
+  return crypto.createHash("sha256").update(password).digest("hex")
 }
 
 export async function POST(req: Request) {
@@ -27,8 +26,7 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "User not found" }, { status: 404 })
       }
 
-      const hash = await hashPassword(password)
-      if (user.password_hash !== hash) {
+      if (user.password_hash !== hashPassword(password)) {
         return NextResponse.json({ error: "Invalid password" }, { status: 401 })
       }
 
@@ -53,7 +51,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ user: data })
     }
 
-    const password_hash = await hashPassword(password)
+    const password_hash = hashPassword(password)
 
     const { data, error } = await supabase
       .from("users")
