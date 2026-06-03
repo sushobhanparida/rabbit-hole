@@ -71,12 +71,12 @@ const components: Components = {
     </li>
   ),
   h1: ({ children, ...props }) => (
-    <h1 className="font-serif text-2xl font-bold text-[#1a1a1a] my-4 leading-snug" {...props}>
+    <h1 className="font-heading text-2xl font-bold text-on-surface my-4 leading-snug" {...props}>
       {children}
     </h1>
   ),
   h2: ({ children, ...props }) => (
-    <h2 className="font-serif text-xl font-bold text-[#1a1a1a] my-3 leading-snug" {...props}>
+    <h2 className="font-heading text-xl font-bold text-on-surface my-3 leading-snug" {...props}>
       {children}
     </h2>
   ),

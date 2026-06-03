@@ -13,7 +13,7 @@ export function ErrorState({ message, onRetry }: ErrorStateProps) {
       <div className="w-14 h-14 rounded-full bg-[#f8f8f8] flex items-center justify-center mb-5 border border-[#f0f0f0]">
         <AlertCircle className="h-6 w-6 text-[#a3a3a3]" />
       </div>
-      <h2 className="font-serif text-xl font-bold text-[#1a1a1a] mb-2">
+      <h2 className="font-heading text-xl font-bold text-on-surface mb-2">
         Couldn't generate content
       </h2>
       <p className="text-sm text-[#737373] leading-relaxed mb-6 max-w-sm">

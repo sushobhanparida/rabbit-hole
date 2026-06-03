@@ -75,7 +75,7 @@ export function LoadingState({ stage = "generating" }: LoadingStateProps) {
             <Sparkles className="h-6 w-6 text-[#1a1a1a]" />
           )}
         </motion.div>
-        <p className="font-serif text-xl font-bold text-[#1a1a1a] mb-2">
+        <p className="font-heading text-xl font-bold text-on-surface mb-2">
           {isResearch ? "Researching your topic..." : "Crafting your learning flow..."}
         </p>
         <AnimatedMessage messages={isResearch ? researchMessages : generatingMessages} />

@@ -14,7 +14,7 @@ export function HeroSection({ topic }: HeroSectionProps) {
         style={{ backgroundImage: `url(${topic.image})` }}
       />
       <div className="reading-width">
-        <h1 className="font-serif text-3xl sm:text-4xl font-bold text-[#1a1a1a] leading-tight mb-3">
+        <h1 className="font-heading text-3xl sm:text-4xl font-bold text-on-surface leading-tight mb-3">
           {topic.title}
         </h1>
         <p className="text-base text-[#737373] leading-relaxed">

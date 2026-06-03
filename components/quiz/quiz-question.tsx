@@ -26,7 +26,7 @@ export function QuizQuestion({ question, selectedIndex, onSelect, onNext, isLast
       className="w-full"
     >
       {/* Question */}
-      <h3 className="font-serif text-xl font-bold text-[#1a1a1a] mb-6 leading-snug">
+      <h3 className="font-heading text-xl font-bold text-on-surface mb-6 leading-snug">
         <MarkdownRenderer content={question.question} />
       </h3>
 

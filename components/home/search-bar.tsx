@@ -34,34 +34,32 @@ export function SearchBar() {
   }
 
   return (
-    <div className="mb-10">
+    <div className="mb-10 mt-4">
       <form onSubmit={handleSubmit}>
-        <div className="relative">
-          <div className="absolute left-5 top-1/2 -translate-y-1/2 text-[#a3a3a3] pointer-events-none">
-            <Sparkles className="h-5 w-5" />
-          </div>
+        <div className="relative flex items-center animate-border-spin w-full rounded-2xl">
+          <Sparkles className="absolute left-4 top-1/2 -translate-y-1/2 text-primary z-10 h-5 w-5" />
           <input
             type="text"
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            placeholder="Type any topic to explore..."
-            className="w-full h-14 pl-14 pr-14 bg-[#f8f8f8] border border-[#e4e4e4] rounded-[24px] text-base text-[#1a1a1a] placeholder:text-[#a3a3a3] focus:outline-none focus:border-[#1a1a1a] focus:bg-white transition-all duration-300"
+            placeholder="What do you want to learn today?"
+            className="w-full h-24 pl-12 pr-32 bg-transparent rounded-2xl border border-transparent focus:outline-none transition-all text-base text-on-surface placeholder:text-outline-variant z-10"
           />
           <button
             type="submit"
             disabled={!value.trim()}
-            className="absolute right-2 top-1/2 -translate-y-1/2 h-10 px-4 bg-[#1a1a1a] text-white rounded-[20px] text-sm font-medium hover:bg-[#333] transition-colors disabled:opacity-30 disabled:cursor-not-allowed active:scale-[0.97]"
+            className="absolute right-3 px-6 py-3 bg-gradient-to-br from-deep-onyx to-[#2a2411] text-white rounded-full font-label text-xs tracking-[0.1em] uppercase hover:opacity-90 active:scale-95 transition-all shadow-sm btn-glow z-10 disabled:opacity-30 disabled:cursor-not-allowed"
           >
             Go
           </button>
         </div>
       </form>
-      <div className="flex gap-2 mt-3 px-1 flex-wrap">
+      <div className="flex gap-2 mt-4 flex-wrap">
         {examples.map((ex) => (
           <button
             key={ex.query}
             onClick={() => handleExample(ex.label, ex.query)}
-            className="text-sm text-[#a3a3a3] hover:text-[#1a1a1a] transition-colors duration-200 px-3 py-1 rounded-full hover:bg-[#f5f5f5]"
+            className="shrink-0 px-4 py-2 bg-surface-container-low rounded-full text-sm text-on-surface-variant hover:bg-surface-container transition-colors border border-white/40 font-sans"
           >
             {ex.label}
           </button>

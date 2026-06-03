@@ -67,7 +67,7 @@ export function CompletionScreen({
       </motion.div>
 
       {/* Heading */}
-      <h2 className="font-serif text-2xl font-bold text-[#1a1a1a] mb-1">
+      <h2 className="font-heading text-2xl font-bold text-on-surface mb-1">
         {message}
       </h2>
       <p className="text-sm text-[#737373] mb-2">

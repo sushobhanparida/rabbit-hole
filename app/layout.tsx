@@ -1,17 +1,24 @@
 import type { Metadata } from "next";
-import { Inter, Merriweather } from "next/font/google";
+import { Bricolage_Grotesque, Hanken_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
+const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-bricolage",
   display: "swap",
 });
 
-const merriweather = Merriweather({
+const hanken = Hanken_Grotesk({
   subsets: ["latin"],
-  weight: ["300", "400", "700", "900"],
-  variable: "--font-merriweather",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-hanken",
+  display: "swap",
+});
+
+const jetbrains = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  variable: "--font-jetbrains",
   display: "swap",
 });
 
@@ -25,8 +32,8 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${merriweather.variable} font-sans`}>
-        <main className="min-h-screen max-w-[600px] mx-auto px-5 py-6">
+      <body className={`${bricolage.variable} ${hanken.variable} ${jetbrains.variable} font-sans`}>
+        <main className="min-h-screen max-w-[600px] mx-auto px-5 pt-[80px] pb-[90px]">
           {children}
         </main>
       </body>

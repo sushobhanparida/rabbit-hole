@@ -47,27 +47,27 @@ export function VoteButtons({ topicId, initialScore, initialUserVote, userId }: 
   }
 
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex flex-col items-center gap-1 shrink-0">
       <button
         onClick={() => handleVote(1)}
-        className={`p-1 rounded-md transition-colors ${
-          vote === 1 ? "text-[#1a1a1a] bg-[#f0f0f0]" : "text-[#a3a3a3] hover:text-[#525252] hover:bg-[#f5f5f5]"
+        className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors active:scale-90 ${
+          vote === 1 ? "text-primary bg-primary-container/30" : "text-outline hover:text-primary hover:bg-primary-container/30"
         }`}
       >
-        <ArrowBigUp className="h-4 w-4" />
+        <ArrowBigUp className="h-[18px] w-[18px]" />
       </button>
-      <span className={`text-xs font-semibold min-w-[20px] text-center tabular-nums ${
-        score > 0 ? "text-[#1a1a1a]" : score < 0 ? "text-[#a3a3a3]" : "text-[#a3a3a3]"
+      <span className={`font-label text-xs font-bold tabular-nums ${
+        score > 0 ? "text-on-surface" : "text-outline"
       }`}>
         {score}
       </span>
       <button
         onClick={() => handleVote(-1)}
-        className={`p-1 rounded-md transition-colors ${
-          vote === -1 ? "text-[#1a1a1a] bg-[#f0f0f0]" : "text-[#a3a3a3] hover:text-[#525252] hover:bg-[#f5f5f5]"
+        className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors active:scale-90 ${
+          vote === -1 ? "text-error bg-error-container/30" : "text-outline hover:text-error hover:bg-error-container/30"
         }`}
       >
-        <ArrowBigDown className="h-4 w-4" />
+        <ArrowBigDown className="h-[18px] w-[18px]" />
       </button>
     </div>
   )

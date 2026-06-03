@@ -11,8 +11,8 @@ interface SectionProps {
 export function Section({ title, children, fullWidth }: SectionProps) {
   if (fullWidth) {
     return (
-      <section className="mb-6 px-0.5">
-        <h2 className="text-base font-semibold text-[#1a1a1a] mb-4">
+      <section className="mb-6">
+        <h2 className="font-heading text-xl font-bold text-on-surface mb-4 tracking-tight">
           {title}
         </h2>
         <div className="flex flex-col gap-3">
@@ -24,7 +24,7 @@ export function Section({ title, children, fullWidth }: SectionProps) {
 
   return (
     <section className="mb-10">
-      <h2 className="text-base font-semibold text-[#1a1a1a] mb-4 px-0.5">
+      <h2 className="font-heading text-xl font-bold text-on-surface mb-4 tracking-tight">
         {title}
       </h2>
       <div className="overflow-x-auto scrollbar-hide -mx-5 px-5">

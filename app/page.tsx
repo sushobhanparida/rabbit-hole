@@ -8,8 +8,7 @@ import { HomeNav } from "@/components/home/home-nav"
 import { LeaderboardList } from "@/components/leaderboard/leaderboard-list"
 import { useStore } from "@/lib/store"
 import Link from "next/link"
-import { motion } from "framer-motion"
-import { BookOpen, Users, Lightbulb } from "lucide-react"
+import { Sparkles, Users, Lightbulb, BookOpen } from "lucide-react"
 import { useEffect, useState } from "react"
 
 interface CommunityTopic {
@@ -41,100 +40,100 @@ export default function HomePage() {
   }, [user?.id])
 
   return (
-    <div className="pb-20">
+    <div>
       <HomeHeader />
-      <SearchBar />
+      <div className="px-5">
+        <SearchBar />
 
-      {activeTab === "home" ? (
-        <>
-          {collection.length > 0 && (
-            <Section title="My Collection">
-              {collection.map((item) => (
-                <Link key={item.topicId} href={`/learn/${item.topicId}/cards?title=${encodeURIComponent(item.title)}`} className="block">
-                  <motion.article
-                    whileTap={{ scale: 0.97 }}
-                    className="flex-shrink-0 w-[200px] sm:w-[220px] h-[180px] bg-white rounded-[24px] overflow-hidden shadow-card border border-[#f0f0f0] cursor-pointer hover:shadow-elevate transition-shadow duration-300 p-5 flex flex-col"
-                  >
-                    <div className="w-10 h-10 rounded-full bg-[#f5f5f5] flex items-center justify-center mb-4 flex-shrink-0">
-                      <BookOpen className="h-5 w-5 text-[#525252]" />
+        {activeTab === "home" ? (
+          <>
+            {collection.length > 0 && (
+              <Section title="My Collection">
+                {collection.map((item, i) => (
+                  <Link key={item.topicId} href={`/learn/${item.topicId}/cards?title=${encodeURIComponent(item.title)}`} className="block spring-up" style={{ animationDelay: `${0.3 + i * 0.1}s` }}>
+                    <div className="glass-card rounded-2xl w-64 shrink-0 p-5 flex flex-col justify-between min-h-[200px] cursor-pointer">
+                      <div className="w-10 h-10 rounded-full bg-primary-container/50 flex items-center justify-center mb-4">
+                        <BookOpen className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <div className="flex justify-between items-start mb-2">
+                          <span className="font-label text-[10px] tracking-[0.1em] uppercase text-primary">COMPLETED</span>
+                          <span className="px-2 py-0.5 rounded-full text-[9px] font-label bg-secondary-container/30 text-secondary uppercase tracking-wider">
+                            {item.score}/{item.total}
+                          </span>
+                        </div>
+                        <h3 className="font-heading text-base font-bold text-on-surface leading-tight line-clamp-2" title={item.title}>
+                          {titleCase(item.title)}
+                        </h3>
+                        <p className="font-label text-[10px] text-outline mt-1.5">{new Date(item.completedAt).toLocaleDateString()}</p>
+                      </div>
                     </div>
-                    <h3
-                      className="font-sans text-sm font-semibold text-[#1a1a1a] leading-tight line-clamp-2 mb-2"
-                      title={item.title}
-                    >
-                      {titleCase(item.title)}
-                    </h3>
-                    <div className="flex items-center gap-2 text-xs text-[#a3a3a3] mt-auto">
-                      <span>{item.score}/{item.total} correct</span>
-                      <span className="w-1 h-1 rounded-full bg-[#d1d1d1]" />
-                      <span>{new Date(item.completedAt).toLocaleDateString()}</span>
-                    </div>
-                  </motion.article>
-                </Link>
-              ))}
-            </Section>
-          )}
-
-          <Section title="Community" fullWidth>
-            {loading ? (
-              <div className="w-full bg-[#f8f8f8] rounded-[24px] p-5 border border-[#f0f0f0]">
-                <p className="text-xs text-[#a3a3a3]">Loading...</p>
-              </div>
-            ) : communityTopics.length === 0 ? (
-              <div className="w-full bg-[#f8f8f8] rounded-[24px] p-5 border border-[#f0f0f0]">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-8 h-8 rounded-full bg-[#eee] flex items-center justify-center">
-                    <Users className="h-4 w-4 text-[#525252]" />
-                  </div>
-                  <p className="text-sm font-medium text-[#525252]">No topics saved by the community yet</p>
-                </div>
-                <p className="text-xs text-[#a3a3a3] ml-11">Complete a topic and save it to your collection to be the first!</p>
-              </div>
-            ) : (
-              communityTopics.map((topic) => (
-                <div key={topic.topic_id} className="w-full bg-white rounded-[24px] shadow-card border border-[#f0f0f0] p-4 flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-[#f5f5f5] flex items-center justify-center flex-shrink-0">
-                    <Users className="h-5 w-5 text-[#525252]" />
-                  </div>
-                  <Link href={`/learn/${topic.topic_id}/cards?title=${encodeURIComponent(topic.title)}`} className="flex-1 min-w-0">
-                    <h3 className="font-sans text-sm font-semibold text-[#1a1a1a] truncate hover:underline" title={topic.title}>
-                      {titleCase(topic.title)}
-                    </h3>
-                    <p className="text-[10px] text-[#a3a3a3] mt-0.5">{topic.save_count} {topic.save_count === 1 ? "person" : "people"} saved this</p>
                   </Link>
-                  <VoteButtons
-                    topicId={topic.topic_id}
-                    initialScore={topic.vote_score}
-                    initialUserVote={topic.user_vote}
-                    userId={user?.id}
-                  />
-                </div>
-              ))
+                ))}
+              </Section>
             )}
-          </Section>
 
-          {collection.length === 0 && (
-            <Section title="Getting Started" fullWidth>
-              <div className="w-full bg-[#f8f8f8] rounded-[24px] p-5 border border-[#f0f0f0] flex items-start gap-4">
-                <div className="w-10 h-10 rounded-full bg-[#eee] flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <Lightbulb className="h-5 w-5 text-[#525252]" />
+            <Section title="Community" fullWidth>
+              {loading ? (
+                <div className="glass-card rounded-xl p-5">
+                  <p className="text-xs text-outline">Loading...</p>
                 </div>
-                <div>
-                  <p className="text-sm font-medium text-[#525252] mb-1">Type any topic to dive in</p>
-                  <p className="text-xs text-[#a3a3a3] leading-relaxed">
-                    You'll get smart cards, a quiz, and connected topics to explore next. Complete topics to build your collection.
-                  </p>
+              ) : communityTopics.length === 0 ? (
+                <div className="glass-card rounded-xl p-5 flex items-start gap-4 spring-up" style={{ animationDelay: "0.6s" }}>
+                  <div className="w-10 h-10 rounded-full bg-primary-container/30 flex items-center justify-center shrink-0 mt-0.5">
+                    <Users className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-on-surface mb-1">No topics saved by the community yet</p>
+                    <p className="text-xs text-outline leading-relaxed">Complete a topic and save it to your collection to be the first!</p>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                communityTopics.map((topic, i) => (
+                  <div key={topic.topic_id} className="glass-card rounded-xl p-4 flex items-center gap-4 spring-up" style={{ animationDelay: `${0.6 + i * 0.1}s` }}>
+                    <div className="shrink-0 w-12 h-12 rounded-xl bg-primary-container/20 flex items-center justify-center border border-white/40">
+                      <Sparkles className="h-5 w-5 text-primary" />
+                    </div>
+                    <Link href={`/learn/${topic.topic_id}/cards?title=${encodeURIComponent(topic.title)}`} className="flex-1 min-w-0">
+                      <h3 className="font-heading text-base font-bold text-on-surface truncate" title={topic.title}>
+                        {titleCase(topic.title)}
+                      </h3>
+                      <p className="text-xs text-on-surface-variant mt-0.5">{topic.save_count} {topic.save_count === 1 ? "person" : "people"} saved this</p>
+                    </Link>
+                    <VoteButtons
+                      topicId={topic.topic_id}
+                      initialScore={topic.vote_score}
+                      initialUserVote={topic.user_vote}
+                      userId={user?.id}
+                    />
+                  </div>
+                ))
+              )}
             </Section>
-          )}
-        </>
-      ) : (
-        <section className="px-0.5">
-          <h2 className="text-base font-semibold text-[#1a1a1a] mb-4">Leaderboard</h2>
-          <LeaderboardList />
-        </section>
-      )}
+
+            {collection.length === 0 && (
+              <Section title="Getting Started" fullWidth>
+                <div className="glass-card rounded-xl p-5 flex items-start gap-4 spring-up" style={{ animationDelay: "0.5s" }}>
+                  <div className="w-10 h-10 rounded-full bg-primary-container/30 flex items-center justify-center shrink-0 mt-0.5">
+                    <Lightbulb className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-on-surface mb-1">Type any topic to dive in</p>
+                    <p className="text-xs text-outline leading-relaxed">
+                      You&apos;ll get smart cards, a quiz, and connected topics to explore next. Complete topics to build your collection.
+                    </p>
+                  </div>
+                </div>
+              </Section>
+            )}
+          </>
+        ) : (
+          <section>
+            <h2 className="font-heading text-xl font-bold text-on-surface mb-4 tracking-tight spring-up">Leaderboard</h2>
+            <LeaderboardList />
+          </section>
+        )}
+      </div>
 
       <HomeNav activeTab={activeTab} onTabChange={setActiveTab} />
     </div>

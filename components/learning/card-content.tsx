@@ -76,7 +76,7 @@ export function CardContent({ card, onAnswer, showResult, selectedAnswer, onSele
       )}
 
       {/* Title */}
-      <h2 className="font-serif text-xl sm:text-xl font-bold text-[#1a1a1a] leading-snug mb-3 flex-shrink-0">
+      <h2 className="font-heading text-xl font-bold text-on-surface leading-snug mb-3 flex-shrink-0">
         <MarkdownRenderer content={card.title} />
       </h2>
 
