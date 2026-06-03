@@ -33,7 +33,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${bricolage.variable} ${hanken.variable} ${jetbrains.variable} font-sans`}>
-        <main className="min-h-screen max-w-[600px] mx-auto px-5 pt-[80px] pb-[90px]">
+        <main className="h-screen max-w-[600px] mx-auto px-5 pt-[80px] pb-[90px] overflow-y-auto">
           {children}
         </main>
       </body>

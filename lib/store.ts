@@ -17,6 +17,7 @@ interface LearningSession {
   quizScore: number
   quizTotal: number
   quizXpValues: number[]
+  lastQuestionCorrect: boolean
   totalCards: number
   maxCardReached: number
   startTime: number
@@ -25,8 +26,8 @@ interface LearningSession {
 
 interface XpBreakdown {
   quizXp: number
-  completionXp: number
-  coverageXp: number
+  toughBonus: number
+  perfectBonus: number
   total: number
 }
 
@@ -78,7 +79,7 @@ interface AppState {
   nextCard: () => void
   prevCard: () => void
   startQuiz: () => void
-  recordQuizScore: (score: number, total: number) => void
+  recordQuizScore: (score: number, total: number, lastCorrect?: boolean) => void
   completeSession: () => void
   resetSession: () => void
   cacheFlow: (topicId: string, flow: LearningFlow) => void
@@ -94,6 +95,7 @@ const defaultSession: LearningSession = {
   quizScore: 0,
   quizTotal: 0,
   quizXpValues: [],
+  lastQuestionCorrect: false,
   totalCards: 0,
   maxCardReached: 0,
   startTime: 0,
@@ -165,6 +167,7 @@ export const useStore = create<AppState>()(
                 topicTitle,
                 phase: "learning",
                 flow: cached,
+                totalCards: cached.cards.length + (cached.quiz?.questions?.length || 0),
               },
             }
           }
@@ -231,7 +234,7 @@ export const useStore = create<AppState>()(
           session: { ...s.session, phase: "quiz", quizScore: 0, quizTotal: 0 },
         })),
 
-      recordQuizScore: (score, total) =>
+      recordQuizScore: (score, total, lastCorrect?: boolean) =>
         set((s) => {
           const values: number[] = []
           for (let i = 0; i < total; i++) {
@@ -239,24 +242,30 @@ export const useStore = create<AppState>()(
             values.push(i < score ? base : 0)
           }
           return {
-            session: { ...s.session, quizScore: score, quizTotal: total, quizXpValues: values },
+            session: {
+              ...s.session,
+              quizScore: score,
+              quizTotal: total,
+              quizXpValues: values,
+              lastQuestionCorrect: lastCorrect ?? false,
+            },
           }
         }),
 
       completeSession: () =>
         set((s) => {
-          const { quizScore, quizTotal, quizXpValues, maxCardReached, totalCards, topicId, topicTitle } = s.session
+          const { quizScore, quizTotal, quizXpValues, lastQuestionCorrect, maxCardReached, totalCards, topicId, topicTitle } = s.session
           const rawQuizXp = quizXpValues.reduce((a, b) => a + b, 0)
           const perfect = quizScore >= quizTotal && quizTotal > 0
           const quizXp = perfect ? Math.round(rawQuizXp * 1.5) : rawQuizXp
-          const coverageRatio = totalCards > 0 ? maxCardReached / totalCards : 0
-          const coverageXp = Math.round(coverageRatio * 50)
-          const completionXp = maxCardReached >= totalCards - 1 ? 30 : 0
-          const total = quizXp + coverageXp + completionXp
-          const xpBreakdown = { quizXp, coverageXp, completionXp, total }
+          const toughBonus = lastQuestionCorrect ? 5 : 0
+          const perfectBonus = perfect ? 5 : 0
+          const total = quizXp + toughBonus + perfectBonus
+          const xpBreakdown = { quizXp, toughBonus, perfectBonus, total }
 
-          const newXp = s.xp + total
-          const completedCount = s.completedTopics.includes(topicId) ? s.completedTopics.length : s.completedTopics.length + 1
+          const isRepeat = s.completedTopics.includes(topicId)
+          const newXp = isRepeat ? s.xp : s.xp + total
+          const completedCount = isRepeat ? s.completedTopics.length : s.completedTopics.length + 1
 
           if (s.user?.id) {
             syncProgress(s.user.id, {

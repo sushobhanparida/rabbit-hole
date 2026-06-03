@@ -115,7 +115,7 @@ export function CompletionScreen({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
-          className="w-full max-w-[260px] mx-auto mb-6 glass-card rounded-xl p-4"
+          className="w-full max-w-[200px] mx-auto mb-6 glass-card rounded-xl p-4"
         >
           <p className="text-xs text-[#a3a3a3] uppercase tracking-wide font-medium mb-3 text-center">
             XP Earned
@@ -126,11 +126,7 @@ export function CompletionScreen({
               <p className="text-[10px] text-[#a3a3a3]">Quiz</p>
             </div>
             <div className="text-center">
-              <p className="text-lg font-bold text-[#1a1a1a]">{xpBreakdown.coverageXp}</p>
-              <p className="text-[10px] text-[#a3a3a3]">Cards</p>
-            </div>
-            <div className="text-center">
-              <p className="text-lg font-bold text-[#1a1a1a]">+{xpBreakdown.completionXp}</p>
+              <p className="text-lg font-bold text-[#1a1a1a]">+{xpBreakdown.toughBonus + xpBreakdown.perfectBonus}</p>
               <p className="text-[10px] text-[#a3a3a3]">Bonus</p>
             </div>
             <div className="w-px h-10 bg-[#e4e4e4]" />

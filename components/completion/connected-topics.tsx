@@ -24,13 +24,10 @@ export function ConnectedTopics({ topics }: ConnectedTopicsProps) {
             className="flex items-center justify-between w-full p-4 rounded-[16px] border border-[#e4e4e4] bg-white hover:border-[#1a1a1a] transition-colors group"
           >
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-0.5">
+              <div className="mb-0.5">
                 <p className="text-sm font-medium text-[#1a1a1a] truncate">
                   {topic.title}
                 </p>
-                <span className="text-[11px] text-[#a3a3a3] px-2 py-0.5 rounded-full bg-[#f0f0f0]">
-                  {topic.relationship}
-                </span>
               </div>
               <p className="text-xs text-[#737373] leading-snug line-clamp-2">
                 {topic.description}

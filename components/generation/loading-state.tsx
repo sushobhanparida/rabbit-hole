@@ -56,13 +56,7 @@ export function LoadingState({ stage = "generating" }: LoadingStateProps) {
   const isResearch = stage === "research"
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-120px)]">
-      <div className="mb-6">
-        <div className="h-1 bg-[#f0f0f0] rounded-full overflow-hidden mb-8">
-          <div className="h-full w-1/3 bg-[#1a1a1a] rounded-full animate-pulse" />
-        </div>
-      </div>
-
+    <div className="flex flex-col min-h-[calc(100dvh-170px)]">
       <div className="flex-1 flex flex-col items-center justify-center px-8 text-center">
         <motion.div
           animate={isResearch ? { rotate: [0, 360] } : { scale: [1, 1.08, 1] }}
@@ -76,7 +70,7 @@ export function LoadingState({ stage = "generating" }: LoadingStateProps) {
           )}
         </motion.div>
         <p className="font-heading text-xl font-bold text-on-surface mb-2">
-          {isResearch ? "Researching your topic..." : "Crafting your learning flow..."}
+          {isResearch ? "Entering rabbit hole.." : "Crafting your learning flow..."}
         </p>
         <AnimatedMessage messages={isResearch ? researchMessages : generatingMessages} />
       </div>

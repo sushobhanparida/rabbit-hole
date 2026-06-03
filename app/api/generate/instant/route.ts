@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     ]);
 
     const searchResults = tavilyResponse?.results || [];
-    const flow = buildTemplateFlow(topicId, title, description || `Learn about ${title}`, wikipediaExtract, searchResults);
+    const flow = await buildTemplateFlow(topicId, title, description || `Learn about ${title}`, wikipediaExtract, searchResults);
     flow.category = category || undefined;
 
     return NextResponse.json({ success: true, data: flow });

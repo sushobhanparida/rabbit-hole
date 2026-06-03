@@ -29,6 +29,57 @@ function extractTopics(text: string, title: string): ConnectedTopic[] {
   }))
 }
 
+const NIM_API_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
+const NIM_MODEL = "microsoft/phi-4-mini-instruct"
+
+async function generateConnectedTopicsViaNIM(text: string, title: string, apiKey: string): Promise<ConnectedTopic[] | null> {
+  try {
+    const prompt = `Given this text about "${title}", extract exactly 4 related topics that someone could explore next. These should be specific concepts, people, events, or subtopics mentioned in or directly related to the text.
+
+Return ONLY a JSON array, no other text:
+[
+  {"title": "Topic Name", "description": "Brief why this connects", "relationship": "Subtopic|Prerequisite|Related|Deeper Dive"},
+  ...
+]`
+
+    const response = await fetch(NIM_API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: NIM_MODEL,
+        messages: [
+          { role: "system", content: "You extract related learning topics from text. Return ONLY valid JSON arrays, no other text." },
+          { role: "user", content: `${prompt}\n\nText:\n${text.slice(0, 3000)}` },
+        ],
+        temperature: 0.3,
+        max_tokens: 512,
+      }),
+      signal: AbortSignal.timeout(12000),
+    })
+
+    if (!response.ok) return null
+
+    const data = await response.json()
+    const content: string = data.choices?.[0]?.message?.content?.trim()
+    if (!content) return null
+
+    const json = JSON.parse(content.replace(/```json|```/g, "").trim())
+    if (!Array.isArray(json)) return null
+
+    return json.slice(0, 4).map((item: any, i: number) => ({
+      id: slugify(item.title || `topic-${i}`),
+      title: item.title || `Related Topic ${i + 1}`,
+      description: item.description || `Explore more about ${item.title || "this topic"}.`,
+      relationship: item.relationship || "Related",
+    }))
+  } catch {
+    return null
+  }
+}
+
 function generateQuizFromText(text: string, title: string): QuizQuestion[] {
   const sentences = extractSentences(text, 8)
 
@@ -160,13 +211,13 @@ function sourceLinks(results: TavilyResult[]): { title: string; url: string; fav
   return results.slice(0, 3).map((r) => ({ title: r.title, url: r.url, favicon: r.favicon }))
 }
 
-export function buildTemplateFlow(
+export async function buildTemplateFlow(
   topicId: string,
   title: string,
   description: string,
   wikipediaExtract: string | null,
   searchResults: TavilyResult[]
-): LearningFlow {
+): Promise<LearningFlow> {
   const sorted = [...searchResults].sort((a, b) => b.score - a.score)
   const text = wikipediaExtract || sorted.map((r) => r.content).join(" ") || description
   const sentences = extractSentences(text, 12)
@@ -215,7 +266,14 @@ export function buildTemplateFlow(
   }
 
   const quiz = { questions: generateQuizFromText(text, title) }
-  const connectedTopics = extractTopics(text, title)
+  const apiKey = process.env.NVIDIA_NIM_API_KEY
+  let connectedTopics: ConnectedTopic[] | null = null
+  if (apiKey) {
+    connectedTopics = await generateConnectedTopicsViaNIM(text, title, apiKey)
+  }
+  if (!connectedTopics) {
+    connectedTopics = extractTopics(text, title)
+  }
 
   return {
     cards,

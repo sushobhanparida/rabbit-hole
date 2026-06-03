@@ -165,13 +165,14 @@ export function CardDeckFlow({ initialTitle }: CardDeckFlowProps) {
   const finishWithCompletion = useCallback(() => {
     const quizCardCount = allCards.length - learningCardCount
     let score = 0
+    let lastCorrect = false
     for (let i = 0; i < quizCardCount; i++) {
       const card = allCards[learningCardCount + i]
-      if (quizAnswers[card.id] === card.correctIndex) {
-        score++
-      }
+      const isCorrect = quizAnswers[card.id] === card.correctIndex
+      if (isCorrect) score++
+      if (i === quizCardCount - 1) lastCorrect = isCorrect
     }
-    recordQuizScore(score, quizCardCount)
+    recordQuizScore(score, quizCardCount, lastCorrect)
     completeSession()
   }, [allCards, learningCardCount, quizAnswers, recordQuizScore, completeSession])
 
@@ -286,7 +287,7 @@ export function CardDeckFlow({ initialTitle }: CardDeckFlowProps) {
                   : "bg-[#f0f0f0] text-[#a3a3a3] cursor-not-allowed"
               }`}
             >
-              <span className="font-heading text-sm font-bold">{isLastCard ? "See Results" : "Next"}</span>
+              <span className="font-heading text-sm font-bold whitespace-nowrap">{isLastCard ? "See Results" : "Next"}</span>
               <ChevronRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
             </button>
           </div>

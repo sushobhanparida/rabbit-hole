@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useStore } from "@/lib/store"
-import { Trophy, Medal, Award, Loader2 } from "lucide-react"
+import { Trophy, Medal } from "lucide-react"
 
 interface LeaderboardUser {
   rank: number
@@ -32,46 +32,58 @@ export function LeaderboardList() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-5 w-5 text-[#a3a3a3] animate-spin" />
+<div className="flex flex-col gap-2">
+        {[...Array(6)].map((_, i) => (
+          <div key={i} className="glass-card h-20 rounded-[24px] flex items-center px-5 gap-4">
+            <div className="w-8 flex-shrink-0" />
+            <div className="w-10 h-10 rounded-full bg-surface-container animate-pulse" />
+            <div className="flex-1 space-y-2">
+              <div className="h-3 w-24 bg-surface-container rounded animate-pulse" />
+              <div className="h-2.5 w-16 bg-surface-container rounded animate-pulse" />
+            </div>
+            <div className="space-y-1.5 text-right">
+              <div className="h-3 w-16 bg-surface-container rounded animate-pulse ml-auto" />
+              <div className="h-2.5 w-8 bg-surface-container rounded animate-pulse ml-auto" />
+            </div>
+          </div>
+        ))}
       </div>
     )
   }
 
   if (entries.length === 0) {
     return (
-      <div className="text-center py-20">
-        <Trophy className="h-10 w-10 text-[#d1d1d1] mx-auto mb-3" />
-        <p className="text-sm text-[#a3a3a3]">No leaderboard data yet</p>
-        <p className="text-xs text-[#d1d1d1] mt-1">Complete topics to earn XP and appear here</p>
+      <div className="glass-card rounded-[24px] p-8 text-center spring-up">
+        <Trophy className="h-10 w-10 text-outline mx-auto mb-3" />
+        <p className="text-sm text-outline">No leaderboard data yet</p>
+        <p className="text-xs text-outline mt-1">Complete topics to earn XP and appear here</p>
       </div>
     )
   }
 
-  const rankIcon = (rank: number) => {
-    if (rank === 1) return <Trophy className="h-4 w-4 text-[#daa520]" />
-    if (rank === 2) return <Medal className="h-4 w-4 text-[#a8a8a8]" />
-    if (rank === 3) return <Medal className="h-4 w-4 text-[#cd7f32]" />
-    return null
+  const rankIcon = (rank: number, isMe: boolean) => {
+    if (rank === 1) return <Trophy className="h-5 w-5 text-secondary-container" />
+    if (rank === 2) return <Medal className="h-5 w-5 text-outline" />
+    if (rank === 3) return <Medal className="h-5 w-5" style={{ color: "#cd7f32" }} />
+    return (
+      <span className={`font-label text-xs tabular-nums ${isMe ? "text-white/60" : "text-outline"}`}>
+        #{rank}
+      </span>
+    )
   }
 
   return (
-    <div className="flex flex-col gap-1">
-      {entries.map((entry) => {
+    <div className="flex flex-col gap-2 pb-4">
+      {entries.map((entry, i) => {
         const isMe = entry.id === user?.id
         return (
           <div
             key={entry.id}
-            className={`flex items-center gap-3 px-4 py-3 rounded-[16px] transition-colors ${
-              isMe ? "bg-[#1a1a1a] text-white" : "bg-white hover:bg-[#f8f8f8]"
-            }`}
+            className={`${isMe ? "bg-[#1a1a1a] text-white" : "glass-card"} h-20 rounded-[24px] flex items-center px-5 gap-4 spring-up hover:scale-[1.02] transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]`}
+            style={{ animationDelay: `${i * 80}ms` }}
           >
-            <div className="w-8 text-center flex-shrink-0">
-              {rankIcon(entry.rank) || (
-                <span className={`text-sm font-semibold tabular-nums ${isMe ? "text-white/60" : "text-[#a3a3a3]"}`}>
-                  {entry.rank}
-                </span>
-              )}
+            <div className="w-8 flex-shrink-0 flex justify-center">
+              {rankIcon(entry.rank, isMe)}
             </div>
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0 ${
               isMe ? "bg-white/20 text-white" : "bg-[#f0f0f0] text-[#525252]"
@@ -79,18 +91,18 @@ export function LeaderboardList() {
               {entry.name.charAt(0).toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">
-              <p className={`text-sm font-medium truncate ${isMe ? "text-white" : "text-[#1a1a1a]"}`}>
+              <p className={`text-sm font-medium leading-tight truncate ${isMe ? "text-white" : "text-on-surface"}`}>
                 {isMe ? "You" : entry.name}
               </p>
-              <p className={`text-[11px] ${isMe ? "text-white/50" : "text-[#a3a3a3]"}`}>
-                {entry.topics_completed} {entry.topics_completed === 1 ? "topic" : "topics"} completed
+              <p className={`text-[11px] whitespace-nowrap ${isMe ? "text-white/50" : "text-[#a3a3a3]"}`}>
+                {entry.topics_completed} {entry.topics_completed === 1 ? "rabbit hole" : "rabbit holes"}
               </p>
             </div>
-            <div className="text-right flex-shrink-0">
-              <p className={`text-sm font-bold tabular-nums ${isMe ? "text-white" : "text-[#1a1a1a]"}`}>
+            <div className="flex flex-col items-end flex-shrink-0">
+              <p className={`font-heading font-bold text-sm leading-tight tabular-nums ${isMe ? "text-white" : "text-primary"}`}>
                 {entry.xp.toLocaleString()}
               </p>
-              <p className="text-[10px] text-[#a3a3a3]">XP</p>
+              <span className={`font-label text-[10px] ${isMe ? "text-white/50" : "text-outline"}`}>XP</span>
             </div>
           </div>
         )

@@ -19,7 +19,7 @@ export function HomeHeader() {
         <img
           src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIaUb3GN5u3RO_h5GHzXAPM4rDRLX-K3gwy3jx_waQC44FXyKsKUJfzTef5dVI_jlhODKYgR3vaNrO0-pmOyuNj__UzOkggXReRn1FQMWAI3IePSj-Eo24trhwLzZpLpHzevZQ4d9c5g4eM5IgZKD6aKa5Pjm6hM50JVzJwsotnPY6V08cYMUjJ_3XPRlNiM4cduRkcoYTWKrS0UQSGpMD99SwXHc8IQWGU7k3d_4H0B3ZFXPEjohAV2OA-XmmnIZrYdyAzyhPtno"
           alt="Rabbit Hole"
-          className="h-10 w-auto"
+          className="h-10 w-auto rounded-lg"
         />
         <h1 className="font-heading text-xl font-black text-on-surface tracking-tighter">
           RABBIT HOLE
