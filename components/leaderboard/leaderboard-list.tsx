@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useStore } from "@/lib/store"
 import { Trophy, Medal } from "lucide-react"
+import { motion } from "framer-motion"
 
 interface LeaderboardUser {
   rank: number
@@ -32,10 +33,10 @@ export function LeaderboardList() {
 
   if (loading) {
     return (
-<div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-3">
         {[...Array(6)].map((_, i) => (
-          <div key={i} className="glass-card h-20 rounded-[24px] flex items-center px-5 gap-4">
-            <div className="w-8 flex-shrink-0" />
+          <div key={i} className="glass-card h-24 rounded-[24px] flex items-center px-5 gap-4">
+            <div className="w-10 flex-shrink-0" />
             <div className="w-10 h-10 rounded-full bg-surface-container animate-pulse" />
             <div className="flex-1 space-y-2">
               <div className="h-3 w-24 bg-surface-container rounded animate-pulse" />
@@ -53,11 +54,11 @@ export function LeaderboardList() {
 
   if (entries.length === 0) {
     return (
-      <div className="glass-card rounded-[24px] p-8 text-center spring-up">
+      <motion.div className="glass-card rounded-[24px] p-8 text-center" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: [0.34, 1.56, 0.64, 1] }}>
         <Trophy className="h-10 w-10 text-outline mx-auto mb-3" />
         <p className="text-sm text-outline">No leaderboard data yet</p>
         <p className="text-xs text-outline mt-1">Complete topics to earn XP and appear here</p>
-      </div>
+      </motion.div>
     )
   }
 
@@ -73,25 +74,27 @@ export function LeaderboardList() {
   }
 
   return (
-    <div className="flex flex-col gap-2 pb-4">
+    <div className="flex flex-col gap-3 pb-4">
       {entries.map((entry, i) => {
         const isMe = entry.id === user?.id
         return (
-          <div
+          <motion.div
             key={entry.id}
-            className={`${isMe ? "bg-[#1a1a1a] text-white" : "glass-card"} h-20 rounded-[24px] flex items-center px-5 gap-4 spring-up hover:scale-[1.02] transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]`}
-            style={{ animationDelay: `${i * 80}ms` }}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.08, duration: 0.8, ease: [0.34, 1.56, 0.64, 1] }}
+            className={`${isMe ? "bg-[#1a1a1a] text-white" : "glass-card"} h-24 rounded-[24px] flex items-center px-5 gap-4 hover:scale-[1.02] transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]`}
           >
-            <div className="w-8 flex-shrink-0 flex justify-center">
+            <div className="w-10 flex-shrink-0 flex justify-center">
               {rankIcon(entry.rank, isMe)}
             </div>
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0 ${
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0 ${
               isMe ? "bg-white/20 text-white" : "bg-[#f0f0f0] text-[#525252]"
             }`}>
               {entry.name.charAt(0).toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">
-              <p className={`text-sm font-medium leading-tight truncate ${isMe ? "text-white" : "text-on-surface"}`}>
+              <p className={`text-base font-medium leading-tight truncate ${isMe ? "text-white" : "text-on-surface"}`}>
                 {isMe ? "You" : entry.name}
               </p>
               <p className={`text-[11px] whitespace-nowrap ${isMe ? "text-white/50" : "text-[#a3a3a3]"}`}>
@@ -104,7 +107,7 @@ export function LeaderboardList() {
               </p>
               <span className={`font-label text-[10px] ${isMe ? "text-white/50" : "text-outline"}`}>XP</span>
             </div>
-          </div>
+          </motion.div>
         )
       })}
     </div>
