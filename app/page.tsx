@@ -104,6 +104,22 @@ export default function HomePage() {
               </Section>
             )}
 
+            {collection.length === 0 && (
+              <Section title="Getting Started" fullWidth>
+                <div className="glass-card rounded-xl p-5 flex items-start gap-4 spring-up" style={{ animationDelay: "0.5s" }}>
+                  <div className="w-10 h-10 rounded-full bg-primary-container/30 flex items-center justify-center shrink-0 mt-0.5">
+                    <Lightbulb className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-on-surface mb-1">Type any topic to dive in</p>
+                    <p className="text-xs text-outline leading-relaxed">
+                      Dive into any topic with smart cards, quizzes, and connected rabbit holes. Complete topics to earn XP and climb the leaderboard.
+                    </p>
+                  </div>
+                </div>
+              </Section>
+            )}
+
             <Section title="Community" fullWidth>
               {loading ? (
                 <div className="glass-card rounded-xl p-5">
@@ -166,21 +182,6 @@ export default function HomePage() {
               )}
             </Section>
 
-            {collection.length === 0 && (
-              <Section title="Getting Started" fullWidth>
-                <div className="glass-card rounded-xl p-5 flex items-start gap-4 spring-up" style={{ animationDelay: "0.5s" }}>
-                  <div className="w-10 h-10 rounded-full bg-primary-container/30 flex items-center justify-center shrink-0 mt-0.5">
-                    <Lightbulb className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-on-surface mb-1">Type any topic to dive in</p>
-                    <p className="text-xs text-outline leading-relaxed">
-                      You&apos;ll get smart cards, a quiz, and connected topics to explore next. Complete topics to build your collection.
-                    </p>
-                  </div>
-                </div>
-              </Section>
-            )}
           </>
         ) : (
           <section>
