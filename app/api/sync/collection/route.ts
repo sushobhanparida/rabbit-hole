@@ -44,14 +44,31 @@ export async function GET(req: Request) {
       }
     }
 
+    // Fetch user names for saved topics (limit to first 3 per topic)
+    const allUserIds = [...new Set(grouped.values().flatMap((g) => g.userIds))]
+    const { data: users } = await supabase
+      .from("users")
+      .select("id, name")
+      .in("id", allUserIds)
+    const userNames = new Map((users || []).map((u) => [u.id, u.name]))
+
+    type SavedUserEntry = { id: string; name: string }
+
     const topics = topicIds.map((topicId) => {
       const g = grouped.get(topicId)!
+      const savedUsers: { name: string; initials: string }[] = g.userIds
+        .map((uid: string): SavedUserEntry => ({ id: uid, name: userNames.get(uid) || "User" }))
+        .filter((u: SavedUserEntry, i: number, arr: SavedUserEntry[]) => arr.findIndex((a: SavedUserEntry) => a.id === u.id) === i)
+        .slice(0, 3)
+        .map((u: SavedUserEntry) => ({ name: u.name, initials: u.name.split(" ").map((n: string) => n[0]).join("").slice(0, 2) }))
       return {
         topic_id: topicId,
         title: g.title,
         save_count: g.saveCount,
         vote_score: voteScores.get(topicId) || 0,
         user_vote: userVotes.get(topicId) || null,
+        saved_users: savedUsers,
+        saved_by_name: savedUsers[0]?.name || "User",
       }
     })
 
@@ -66,7 +83,7 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const { userId, topicId, title, score, total } = await req.json()
+    const { userId, topicId, title, score, total, cardsViewed, totalCards } = await req.json()
 
     if (!userId || !topicId) {
       return NextResponse.json({ error: "userId and topicId required" }, { status: 400 })
@@ -76,7 +93,7 @@ export async function POST(req: Request) {
 
     const { data, error } = await supabase
       .from("saved_topics")
-      .insert({ user_id: userId, topic_id: topicId, title: title || topicId, score: score || 0, total: total || 0 })
+      .insert({ user_id: userId, topic_id: topicId, title: title || topicId, score: score || 0, total: total || 0, cards_viewed: cardsViewed || 0, total_cards: totalCards || 0 })
       .select()
       .single()
 

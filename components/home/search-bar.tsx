@@ -20,6 +20,7 @@ const examples = [
 export function SearchBar() {
   const router = useRouter()
   const [value, setValue] = useState("")
+  const [focused, setFocused] = useState(false)
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
@@ -30,25 +31,29 @@ export function SearchBar() {
   }
 
   const handleExample = (label: string, query: string) => {
-    router.push(`/learn/${query}/cards?title=${encodeURIComponent(label)}`)
+    setValue(label)
   }
 
   return (
     <div className="mb-10 mt-4">
       <form onSubmit={handleSubmit}>
-        <div className="relative flex items-center animate-border-spin w-full rounded-2xl">
-          <Sparkles className="absolute left-4 top-1/2 -translate-y-1/2 text-primary z-10 h-5 w-5" />
+        <div
+          className={`relative w-full rounded-2xl animate-border-spin ${focused ? "h-32 shadow-[0_0_30px_rgba(207,195,255,0.25),0_0_60px_rgba(254,208,131,0.2)]" : "h-20"}`}
+        >
+          <Sparkles className="absolute left-4 top-1/2 -translate-y-1/2 text-primary z-10 h-5 w-5 transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]" />
           <input
             type="text"
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            placeholder="What do you want to learn today?"
-            className="w-full h-24 pl-12 pr-32 bg-transparent rounded-2xl border border-transparent focus:outline-none transition-all text-base text-on-surface placeholder:text-outline-variant z-10"
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+            placeholder="What do you want to learn?"
+            className="absolute inset-[0.5px] pl-12 pr-20 py-0 bg-transparent rounded-2xl border border-transparent focus:outline-none transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] text-base text-on-surface placeholder:text-outline-variant z-10"
           />
           <button
             type="submit"
             disabled={!value.trim()}
-            className="absolute right-3 px-6 py-3 bg-gradient-to-br from-deep-onyx to-[#2a2411] text-white rounded-full font-label text-xs tracking-[0.1em] uppercase hover:opacity-90 active:scale-95 transition-all shadow-sm btn-glow z-10 disabled:opacity-30 disabled:cursor-not-allowed"
+            className="absolute right-3 top-1/2 -translate-y-1/2 px-6 py-4 bg-gradient-to-br from-deep-onyx to-[#2a2411] text-white rounded-full font-label text-xs tracking-[0.1em] uppercase hover:opacity-90 active:scale-95 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] shadow-sm btn-glow z-20 disabled:opacity-30 disabled:cursor-not-allowed"
           >
             Go
           </button>

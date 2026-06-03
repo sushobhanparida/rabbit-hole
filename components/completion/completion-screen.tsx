@@ -6,7 +6,7 @@ import { ConnectedTopic } from "@/lib/types"
 import { ConnectedTopics } from "./connected-topics"
 import { useStore } from "@/lib/store"
 import { Award, Home, RotateCcw, BookmarkCheck, LogIn, X } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { AnimatePresence } from "framer-motion"
 
 interface CompletionScreenProps {
@@ -30,6 +30,26 @@ export function CompletionScreen({
   const login = useStore((s) => s.login)
   const xpBreakdown = useStore((s) => s.session.xpBreakdown)
   const percentage = Math.round((score / total) * 100)
+
+  const [animatedScore, setAnimatedScore] = useState(0)
+  const [animatedPct, setAnimatedPct] = useState(0)
+  const counterRef = useRef(false)
+
+  useEffect(() => {
+    if (counterRef.current) return
+    counterRef.current = true
+    const duration = 1000
+    const start = Date.now()
+    const tick = () => {
+      const elapsed = Date.now() - start
+      const progress = Math.min(elapsed / duration, 1)
+      const eased = 1 - Math.pow(1 - progress, 3)
+      setAnimatedScore(Math.round(eased * score))
+      setAnimatedPct(Math.round(eased * percentage))
+      if (progress < 1) requestAnimationFrame(tick)
+    }
+    requestAnimationFrame(tick)
+  }, [score, percentage])
 
   const [showLogin, setShowLogin] = useState(false)
   const [email, setEmail] = useState("")
@@ -76,16 +96,16 @@ export function CompletionScreen({
 
       {/* Score */}
       <div className="w-full max-w-[200px] mx-auto mb-4">
-        <div className="h-1.5 bg-[#f0f0f0] rounded-full overflow-hidden mb-2">
+        <div className="h-1.5 bg-primary-container/30 rounded-full overflow-hidden mb-2">
           <motion.div
-            className="h-full bg-[#1a1a1a] rounded-full"
+            className="h-full progress-shimmer rounded-full"
             initial={{ width: "0%" }}
             animate={{ width: `${percentage}%` }}
             transition={{ duration: 0.8, delay: 0.4 }}
           />
         </div>
         <p className="text-sm text-[#525252]">
-          {score} / {total} correct ({percentage}%)
+          {animatedScore} / {total} correct ({animatedPct}%)
         </p>
       </div>
 
@@ -95,7 +115,7 @@ export function CompletionScreen({
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
-          className="w-full max-w-[260px] mx-auto mb-6 bg-[#f8f8f8] rounded-[20px] p-4 border border-[#f0f0f0]"
+          className="w-full max-w-[260px] mx-auto mb-6 glass-card rounded-xl p-4"
         >
           <p className="text-xs text-[#a3a3a3] uppercase tracking-wide font-medium mb-3 text-center">
             XP Earned

@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { useStore } from "@/lib/store"
-import { LogOut, User } from "lucide-react"
+import { LogOut } from "lucide-react"
 import { LoginDialog } from "./login-dialog"
 import { motion, AnimatePresence } from "framer-motion"
 
@@ -13,17 +13,14 @@ export function HomeHeader() {
   const [open, setOpen] = useState(false)
 
   return (
-    <header className="fixed top-0 inset-x-0 z-50 bg-surface/80 backdrop-blur-xl border-b border-white/20 shadow-[0_20px_20px_rgba(13,13,13,0.04)] h-16 flex items-center justify-between px-5 max-w-[600px] mx-auto">
-      <div className="flex items-center gap-3">
-        <Avatar className="w-10 h-10 ring-2 ring-white/80">
-          <AvatarFallback className="bg-primary-container/50 text-primary text-sm">
-            {user ? (
-              user.name.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase()
-            ) : (
-              <User className="h-5 w-5" />
-            )}
-          </AvatarFallback>
-        </Avatar>
+    <div className="fixed top-0 inset-x-0 z-50 flex justify-center">
+      <header className="w-full max-w-[600px] bg-surface/80 backdrop-blur-xl border-b border-white/20 shadow-[0_20px_20px_rgba(13,13,13,0.04)] h-16 flex items-center justify-between px-5">
+        <div className="flex items-center gap-3">
+        <img
+          src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIaUb3GN5u3RO_h5GHzXAPM4rDRLX-K3gwy3jx_waQC44FXyKsKUJfzTef5dVI_jlhODKYgR3vaNrO0-pmOyuNj__UzOkggXReRn1FQMWAI3IePSj-Eo24trhwLzZpLpHzevZQ4d9c5g4eM5IgZKD6aKa5Pjm6hM50JVzJwsotnPY6V08cYMUjJ_3XPRlNiM4cduRkcoYTWKrS0UQSGpMD99SwXHc8IQWGU7k3d_4H0B3ZFXPEjohAV2OA-XmmnIZrYdyAzyhPtno"
+          alt="Rabbit Hole"
+          className="h-10 w-auto"
+        />
         <h1 className="font-heading text-xl font-black text-on-surface tracking-tighter">
           RABBIT HOLE
         </h1>
@@ -71,5 +68,6 @@ export function HomeHeader() {
         </AnimatePresence>
       </div>
     </header>
+    </div>
   )
 }

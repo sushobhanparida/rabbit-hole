@@ -8,8 +8,14 @@ import { HomeNav } from "@/components/home/home-nav"
 import { LeaderboardList } from "@/components/leaderboard/leaderboard-list"
 import { useStore } from "@/lib/store"
 import Link from "next/link"
-import { Sparkles, Users, Lightbulb, BookOpen } from "lucide-react"
+import { Sparkles, Users, Lightbulb, Rocket, Globe, Atom, Satellite, Microscope, Telescope, FlaskConical } from "lucide-react"
+import { classifyByKeywords } from "@/lib/categories"
 import { useEffect, useState } from "react"
+
+interface SavedUser {
+  name: string
+  initials: string
+}
 
 interface CommunityTopic {
   topic_id: string
@@ -17,6 +23,8 @@ interface CommunityTopic {
   save_count: number
   vote_score: number
   user_vote: number | null
+  saved_users?: SavedUser[]
+  saved_by_name?: string
 }
 
 export default function HomePage() {
@@ -27,6 +35,21 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true)
 
   const titleCase = (s: string) => s.replace(/\w\S*/g, (w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+
+  const scienceIcons = [Rocket, Globe, Atom, Satellite, Microscope, Telescope, FlaskConical]
+
+  const getIconForTitle = (title: string) => {
+    let hash = 0
+    for (let i = 0; i < title.length; i++) {
+      hash = ((hash << 5) - hash) + title.charCodeAt(i)
+      hash |= 0
+    }
+    return scienceIcons[Math.abs(hash) % scienceIcons.length]
+  }
+
+  const getCategory = (title: string, topicId?: string) => {
+    return classifyByKeywords(title, topicId) || "EXPLORE"
+  }
 
   useEffect(() => {
     const params = user?.id ? `?userId=${encodeURIComponent(user.id)}` : ""
@@ -42,7 +65,7 @@ export default function HomePage() {
   return (
     <div>
       <HomeHeader />
-      <div className="px-5">
+      <div>
         <SearchBar />
 
         {activeTab === "home" ? (
@@ -51,13 +74,13 @@ export default function HomePage() {
               <Section title="My Collection">
                 {collection.map((item, i) => (
                   <Link key={item.topicId} href={`/learn/${item.topicId}/cards?title=${encodeURIComponent(item.title)}`} className="block spring-up" style={{ animationDelay: `${0.3 + i * 0.1}s` }}>
-                    <div className="glass-card rounded-2xl w-64 shrink-0 p-5 flex flex-col justify-between min-h-[200px] cursor-pointer">
-                      <div className="w-10 h-10 rounded-full bg-primary-container/50 flex items-center justify-center mb-4">
-                        <BookOpen className="h-5 w-5 text-primary" />
-                      </div>
+                    <div className="glass-card rounded-2xl w-64 shrink-0 p-5 flex flex-col justify-between min-h-[220px] cursor-pointer">
                       <div>
+                        <div className="w-10 h-10 rounded-full bg-primary-container/50 flex items-center justify-center mb-4">
+                          {(() => { const Icon = getIconForTitle(item.title); return <Icon className="h-5 w-5 text-primary" /> })()}
+                        </div>
                         <div className="flex justify-between items-start mb-2">
-                          <span className="font-label text-[10px] tracking-[0.1em] uppercase text-primary">COMPLETED</span>
+                          <span className="font-label text-[10px] tracking-[0.1em] uppercase text-primary">{item.category || getCategory(item.title, item.topicId)}</span>
                           <span className="px-2 py-0.5 rounded-full text-[9px] font-label bg-secondary-container/30 text-secondary uppercase tracking-wider">
                             {item.score}/{item.total}
                           </span>
@@ -65,7 +88,15 @@ export default function HomePage() {
                         <h3 className="font-heading text-base font-bold text-on-surface leading-tight line-clamp-2" title={item.title}>
                           {titleCase(item.title)}
                         </h3>
-                        <p className="font-label text-[10px] text-outline mt-1.5">{new Date(item.completedAt).toLocaleDateString()}</p>
+                      </div>
+                      <div className="space-y-1.5">
+                        <div className="h-1 bg-primary-container/30 rounded-full overflow-hidden">
+                          <div
+                            className="h-full progress-shimmer rounded-full"
+                            style={{ width: `${(item.totalCards || 0) > 0 ? ((item.cardsViewed || 0) / (item.totalCards || 1)) * 100 : 0}%` }}
+                          />
+                        </div>
+                        <p className="font-label text-[10px] text-outline">{new Date(item.completedAt).toLocaleDateString()}</p>
                       </div>
                     </div>
                   </Link>
@@ -98,7 +129,31 @@ export default function HomePage() {
                       <h3 className="font-heading text-base font-bold text-on-surface truncate" title={topic.title}>
                         {titleCase(topic.title)}
                       </h3>
-                      <p className="text-xs text-on-surface-variant mt-0.5">{topic.save_count} {topic.save_count === 1 ? "person" : "people"} saved this</p>
+                      {/* Avatar stack */}
+                      <div className="flex items-center gap-2 mt-1">
+                        <div className="flex">
+                          {topic.saved_users?.slice(0, 3).map((u, idx) => (
+                            <div
+                              key={idx}
+                              className="w-5 h-5 rounded-full bg-primary-container flex items-center justify-center text-[8px] font-label font-bold text-primary -ml-1 first:ml-0 border border-white"
+                              title={u.name}
+                            >
+                              {u.initials}
+                            </div>
+                          ))}
+                          {topic.save_count > 3 && (
+                            <div className="w-5 h-5 rounded-full bg-surface-container flex items-center justify-center text-[8px] font-label text-outline -ml-1 border border-white">
+                              +{topic.save_count - 3}
+                            </div>
+                          )}
+                        </div>
+                        <p className="text-xs text-on-surface-variant">
+                          {topic.saved_by_name && (
+                            <span className="font-label text-[11px] text-outline">@{topic.saved_by_name.toLowerCase().replace(/\s/g, "")} · </span>
+                          )}
+                          {topic.save_count} {topic.save_count === 1 ? "read" : "read this"}
+                        </p>
+                      </div>
                     </Link>
                     <VoteButtons
                       topicId={topic.topic_id}

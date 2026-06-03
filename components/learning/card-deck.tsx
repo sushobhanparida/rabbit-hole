@@ -35,7 +35,7 @@ export function CardDeck({ cards, currentIndex, onNext, onBack, onFinish }: Card
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-120px)]">
-      <CardHeader current={currentIndex} total={cards.length} />
+      <CardHeader current={currentIndex} total={cards.length} onClose={onFinish} />
 
       <div className="flex-1 flex items-stretch justify-center px-5 pb-1">
         <AnimatePresence mode="wait">

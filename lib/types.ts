@@ -67,4 +67,5 @@ export interface LearningFlow {
   cards: CardContent[];
   quiz: { questions: QuizQuestion[] };
   connectedTopics: ConnectedTopic[];
+  category?: string;
 }

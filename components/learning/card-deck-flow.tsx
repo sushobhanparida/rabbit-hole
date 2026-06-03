@@ -13,7 +13,7 @@ import { LoadingState } from "@/components/generation/loading-state"
 import { ErrorState } from "@/components/generation/error-state"
 import { CompletionScreen } from "@/components/completion/completion-screen"
 import { useNarration } from "@/hooks/use-narration"
-import { ArrowLeft, ArrowRight, X } from "lucide-react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 
 interface CardDeckFlowProps {
   initialTitle?: string
@@ -206,6 +206,7 @@ export function CardDeckFlow({ initialTitle }: CardDeckFlowProps) {
     const quizAnswered = !isQuizCard || quizAnswers[currentCard.id] !== undefined
     const canGoNext = quizAnswered
     const narrationText = `${currentCard.title}. ${currentCard.body}`
+    const listeningMinutes = Math.max(1, Math.ceil(narrationText.replace(/[[\]()*_#`>|:-]/g, "").slice(0, 3000).length / 600))
 
     const handleDragEnd = (_: any, info: any) => {
       if (!canGoNext) return
@@ -221,67 +222,73 @@ export function CardDeckFlow({ initialTitle }: CardDeckFlowProps) {
     }
 
     return (
-      <div className="fixed inset-0 flex flex-col px-5 pt-6 pb-24 overflow-hidden">
-        <button
-          onClick={handleExit}
-          className="absolute top-4 right-4 z-30 w-9 h-9 rounded-full bg-[#f0f0f0] flex items-center justify-center text-[#737373] hover:bg-[#1a1a1a] hover:text-white transition-colors active:scale-[0.92]"
-        >
-          <X className="h-4 w-4" />
-        </button>
-        <CardHeader current={session.currentCardIndex} total={allCards.length} />
+      <div className="fixed inset-0 flex flex-col bg-gradient-card-deck overflow-hidden">
+        {/* Decorative blur elements */}
+        <div className="absolute top-1/4 -left-20 w-[300px] h-[300px] rounded-full bg-primary-container/30 blur-[80px] pointer-events-none" />
+        <div className="absolute bottom-1/4 -right-20 w-[250px] h-[250px] rounded-full bg-secondary-container/20 blur-[80px] pointer-events-none" />
 
-        <div className="flex-1 min-h-0 flex items-stretch justify-center">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentCard.id}
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -100 }}
-              transition={{ type: "spring", stiffness: 500, damping: 40 }}
-              drag="x"
-              dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={0.7}
-              onDragEnd={handleDragEnd}
-              onDrag={(_, info) => setDragX(info.offset.x)}
-              className="w-full max-w-[400px] bg-white rounded-[24px] p-6 shadow-elevate border border-[#f0f0f0] cursor-grab active:cursor-grabbing touch-pan-y flex flex-col overflow-hidden"
-            >
-              <CardContent
-                card={currentCard}
-                selectedAnswer={quizAnswers[currentCard.id]}
-                showResult={quizAnswers[currentCard.id] !== undefined}
-                onSelectAnswer={
-                  isQuizCard ? (idx) => handleQuizSelect(currentCard.id, idx) : undefined
-                }
-                narrationState={narrationState}
-                onToggleNarration={() => toggleNarration(narrationText)}
-                onRestartNarration={() => restartNarration()}
-              />
-            </motion.div>
-          </AnimatePresence>
+        <CardHeader current={session.currentCardIndex} total={allCards.length} onClose={handleExit} />
+
+        <div className="flex-1 flex flex-col px-5 pt-20 pb-28 overflow-hidden">
+          <div className="flex-1 min-h-0 flex items-stretch justify-center relative">
+            {/* Next card peek — visible behind the active card */}
+            <div className="absolute inset-0 flex items-stretch justify-center pointer-events-none">
+              <div className="w-full max-w-[400px] rounded-2xl bg-white/30 border border-white/40 opacity-40 scale-[0.97] translate-y-1" />
+            </div>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentCard.id}
+                initial={{ opacity: 0, x: 50, y: 40, scale: 0.98 }}
+                animate={{ opacity: 1, x: 0, y: 0, scale: 1 }}
+                exit={{ opacity: 0, x: -100, y: 10, scale: 0.98 }}
+                transition={{ type: "spring", stiffness: 500, damping: 40 }}
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.7}
+                onDragEnd={handleDragEnd}
+                onDrag={(_, info) => setDragX(info.offset.x)}
+                className="w-full max-w-[400px] glass-card rounded-2xl p-6 cursor-grab active:cursor-grabbing touch-pan-y flex flex-col overflow-hidden relative shadow-[0_8px_32px_-8px_rgba(13,13,13,0.08)]"
+              >
+                  <CardContent
+                    card={currentCard}
+                    category={session.flow.category}
+                    listeningMinutes={listeningMinutes}
+                    selectedAnswer={quizAnswers[currentCard.id]}
+                    showResult={quizAnswers[currentCard.id] !== undefined}
+                    onSelectAnswer={
+                      isQuizCard ? (idx) => handleQuizSelect(currentCard.id, idx) : undefined
+                    }
+                    narrationState={narrationState}
+                    onToggleNarration={() => toggleNarration(narrationText)}
+                    onRestartNarration={() => restartNarration()}
+                  />
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </div>
 
-        <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-[#f0f0f0] flex items-center justify-between gap-4 px-5 py-3">
-          <div className="max-w-[400px] w-full mx-auto flex items-center justify-between">
-          <button
-            onClick={() => prevCard()}
-            disabled={isFirstCard}
-            className="flex items-center gap-2 h-11 px-5 border border-[#e4e4e4] rounded-[24px] text-sm font-medium text-[#525252] hover:border-[#1a1a1a] hover:text-[#1a1a1a] transition-colors disabled:opacity-30 disabled:cursor-not-allowed active:scale-[0.97]"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back
-          </button>
-          <button
-            onClick={isLastCard ? finishWithCompletion : handleNext}
-            disabled={!canGoNext}
-            className={`flex items-center gap-2 h-11 px-5 rounded-[24px] text-sm font-medium transition-colors active:scale-[0.97] ${
-              canGoNext
-                ? "bg-[#1a1a1a] text-white hover:bg-[#333]"
-                : "bg-[#f0f0f0] text-[#a3a3a3] cursor-not-allowed"
-            }`}
-          >
-            {isLastCard ? "See Results" : "Next"}
-            <ArrowRight className="h-4 w-4" />
-          </button>
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => prevCard()}
+              disabled={isFirstCard}
+              className="group bg-[#0D0D0D] hover:bg-[#1a1a1a] disabled:opacity-30 disabled:cursor-not-allowed rounded-full px-5 py-3 flex items-center gap-2 pointer-events-auto text-white transition-all active:scale-[0.97]"
+            >
+              <ChevronLeft className="h-4 w-4 transition-transform duration-200 group-hover:-translate-x-0.5" />
+              <span className="font-heading text-sm font-bold">Back</span>
+            </button>
+            <button
+              onClick={isLastCard ? finishWithCompletion : handleNext}
+              disabled={!canGoNext}
+              className={`group rounded-full px-5 py-3 flex items-center gap-2 pointer-events-auto transition-all active:scale-[0.97] ${
+                canGoNext
+                  ? "bg-[#0D0D0D] text-white hover:bg-[#1a1a1a]"
+                  : "bg-[#f0f0f0] text-[#a3a3a3] cursor-not-allowed"
+              }`}
+            >
+              <span className="font-heading text-sm font-bold">{isLastCard ? "See Results" : "Next"}</span>
+              <ChevronRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+            </button>
           </div>
         </div>
       </div>

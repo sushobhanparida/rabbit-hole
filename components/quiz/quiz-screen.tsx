@@ -36,15 +36,15 @@ export function QuizScreen({ questions, onComplete }: QuizScreenProps) {
     <div className="flex flex-col min-h-[calc(100vh-120px)]">
       {/* Progress header */}
       <div className="mb-6">
-        <div className="h-1 bg-[#f0f0f0] rounded-full overflow-hidden mb-3">
+        <div className="h-1 bg-primary-container/30 rounded-full overflow-hidden mb-3">
           <motion.div
-            className="h-full bg-[#1a1a1a] rounded-full"
+            className="h-full progress-shimmer rounded-full"
             initial={{ width: "0%" }}
             animate={{ width: `${((currentIndex) / questions.length) * 100}%` }}
             transition={{ duration: 0.3 }}
           />
         </div>
-        <p className="text-xs text-[#a3a3a3] text-center">
+        <p className="text-xs text-outline text-center">
           Quiz {currentIndex + 1} of {questions.length}
         </p>
       </div>

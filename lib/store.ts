@@ -43,6 +43,9 @@ interface CollectionItem {
   completedAt: string
   score: number
   total: number
+  cardsViewed: number
+  totalCards: number
+  category?: string
 }
 
 interface AppState {
@@ -114,20 +117,20 @@ export const useStore = create<AppState>()(
 
       logout: () => set(() => ({ user: null })),
 
-      addToCollection: (topicId, title, score, total) =>
+      addToCollection: (topicId: string, title: string, score: number, total: number, cardsViewed?: number, totalCards?: number, category?: string) =>
         set((s) => {
           if (s.collection.some((c) => c.topicId === topicId)) return s
           if (s.user?.id) {
             fetch("/api/sync/collection", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ userId: s.user.id, topicId, title, score, total }),
+              body: JSON.stringify({ userId: s.user.id, topicId, title, score, total, cardsViewed: cardsViewed || 0, totalCards: totalCards || 0 }),
             }).catch(() => {})
           }
           return {
             collection: [
               ...s.collection,
-              { topicId, title, completedAt: new Date().toISOString(), score, total },
+              { topicId, title, completedAt: new Date().toISOString(), score, total, cardsViewed: cardsViewed || 0, totalCards: totalCards || 0, category },
             ],
           }
         }),
@@ -272,16 +275,17 @@ export const useStore = create<AppState>()(
             syncProfileTopics(s.user.id, completedCount)
           }
 
+          const category = s.session.flow?.category
           const alreadyInCollection = s.collection.some((c) => c.topicId === topicId)
           const newCollection = alreadyInCollection
             ? s.collection
-            : [...s.collection, { topicId, title: topicTitle || topicId, completedAt: new Date().toISOString(), score: quizScore, total: quizTotal }]
+            : [...s.collection, { topicId, title: topicTitle || topicId, completedAt: new Date().toISOString(), score: quizScore, total: quizTotal, cardsViewed: maxCardReached, totalCards, category }]
 
           if (s.user?.id && !alreadyInCollection) {
             fetch("/api/sync/collection", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ userId: s.user.id, topicId, title: topicTitle || topicId, score: quizScore, total: quizTotal }),
+              body: JSON.stringify({ userId: s.user.id, topicId, title: topicTitle || topicId, score: quizScore, total: quizTotal, cardsViewed: maxCardReached, totalCards }),
             }).catch(() => {})
           }
 
