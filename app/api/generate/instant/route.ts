@@ -4,7 +4,7 @@ import { matchImagesToCards, sourceLinks, extractTopics, pickImage } from "@/lib
 import { buildCardsPrompt, buildUserPrompt, buildResearchContext } from "@/lib/prompts";
 import type { CardContent, QuizQuestion, ConnectedTopic, LearningFlow } from "@/lib/types";
 
-const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
+const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent";
 
 function normalizeCards(cards: any[]): CardContent[] {
   for (const card of cards) {
