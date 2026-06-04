@@ -41,7 +41,7 @@ export function CardContent({ card, category, listeningMinutes, showResult, sele
       className="flex flex-col h-full"
     >
       {/* Scrollable content area */}
-      <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide">
+      <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide touch-pan-y">
         <div className="reading-width space-y-4">
           {/* Image */}
           {card.image && !imageError && (
