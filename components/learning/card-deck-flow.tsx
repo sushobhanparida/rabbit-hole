@@ -185,14 +185,16 @@ export function CardDeckFlow({ initialTitle }: CardDeckFlowProps) {
     const listeningMinutes = Math.max(1, Math.ceil(narrationText.replace(/[[\]()*_#`>|:-]/g, "").slice(0, 3000).length / 600))
 
     const handleDragEnd = (_: any, info: any) => {
-      if (!canGoNext) return
       const threshold = 80
       if (info.offset.x < -threshold) {
+        if (!canGoNext) return
         if (isLastCard) {
           finishWithCompletion()
         } else {
           handleNext()
         }
+      } else if (info.offset.x > threshold && !isFirstCard) {
+        prevCard()
       }
       setDragX(0)
     }

@@ -68,7 +68,7 @@ export function LoadingState({ stage = "generating", onTimeoutRetry }: LoadingSt
         <motion.div
           animate={{ scale: [1, 1.08, 1] }}
           transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-          className="w-14 h-14 rounded-full bg-[#f8f8f8] flex items-center justify-center mb-5 border border-[#f0f0f0] overflow-hidden"
+          className="w-14 h-14 rounded-full bg-white flex items-center justify-center mb-5 border border-[#f0f0f0] overflow-hidden"
         >
           <img
             src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIaUb3GN5u3RO_h5GHzXAPM4rDRLX-K3gwy3jx_waQC44FXyKsKUJfzTef5dVI_jlhODKYgR3vaNrO0-pmOyuNj__UzOkggXReRn1FQMWAI3IePSj-Eo24trhwLzZpLpHzevZQ4d9c5g4eM5IgZKD6aKa5Pjm6hM50JVzJwsotnPY6V08cYMUjJ_3XPRlNiM4cduRkcoYTWKrS0UQSGpMD99SwXHc8IQWGU7k3d_4H0B3ZFXPEjohAV2OA-XmmnIZrYdyAzyhPtno"
