@@ -201,6 +201,7 @@ export async function POST(request: NextRequest) {
         cards,
         quiz,
         connectedTopics,
+        difficultyScore: Math.max(1, Math.min(10, generated.difficultyScore || 5)),
       };
 
       return NextResponse.json({ success: true, data: flow });
@@ -256,6 +257,7 @@ export async function POST(request: NextRequest) {
         ],
       },
       connectedTopics,
+      difficultyScore: 3,
     };
 
     return NextResponse.json({ success: true, data: flow });

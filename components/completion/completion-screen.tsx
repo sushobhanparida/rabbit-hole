@@ -120,21 +120,27 @@ export function CompletionScreen({
           <p className="text-xs text-[#a3a3a3] uppercase tracking-wide font-medium mb-3 text-center">
             XP Earned
           </p>
-          <div className="flex items-end justify-center gap-4">
-            <div className="text-center">
-              <p className="text-lg font-bold text-[#1a1a1a]">{xpBreakdown.quizXp}</p>
-              <p className="text-[10px] text-[#a3a3a3]">Quiz</p>
+            <div className="flex items-end justify-center gap-4">
+              <div className="text-center">
+                <p className="text-lg font-bold text-[#1a1a1a]">{xpBreakdown.quizXp}</p>
+                <p className="text-[10px] text-[#a3a3a3]">Quiz</p>
+              </div>
+              <div className="text-center">
+                <p className="text-lg font-bold text-[#1a1a1a]">{xpBreakdown.toughBonus + xpBreakdown.perfectBonus > 0 ? `+${xpBreakdown.toughBonus + xpBreakdown.perfectBonus}` : "0"}</p>
+                <p className="text-[10px] text-[#a3a3a3]">Bonus</p>
+              </div>
+              {xpBreakdown.difficultyMultiplier !== 1 && (
+                <div className="text-center">
+                  <p className="text-lg font-bold text-[#1a1a1a]">×{xpBreakdown.difficultyMultiplier.toFixed(1)}</p>
+                  <p className="text-[10px] text-[#a3a3a3]">Difficulty</p>
+                </div>
+              )}
+              <div className="w-px h-10 bg-[#e4e4e4]" />
+              <div className="text-center">
+                <p className="text-xl font-bold text-[#1a1a1a]">{xpBreakdown.total}</p>
+                <p className="text-[10px] text-[#a3a3a3]">Total</p>
+              </div>
             </div>
-            <div className="text-center">
-              <p className="text-lg font-bold text-[#1a1a1a]">{xpBreakdown.toughBonus + xpBreakdown.perfectBonus > 0 ? `+${xpBreakdown.toughBonus + xpBreakdown.perfectBonus}` : "0"}</p>
-              <p className="text-[10px] text-[#a3a3a3]">Bonus</p>
-            </div>
-            <div className="w-px h-10 bg-[#e4e4e4]" />
-            <div className="text-center">
-              <p className="text-xl font-bold text-[#1a1a1a]">{xpBreakdown.total}</p>
-              <p className="text-[10px] text-[#a3a3a3]">Total</p>
-            </div>
-          </div>
         </motion.div>
       )}
 

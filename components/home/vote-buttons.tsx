@@ -53,27 +53,27 @@ export function VoteButtons({ topicId, initialScore, initialUserVote, userId }: 
 
   return (
     <>
-      <div className="flex flex-col items-center gap-1 shrink-0">
+      <div className="flex flex-col items-center gap-px shrink-0">
         <button
           onClick={() => handleVote(1)}
-          className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors active:scale-90 ${
+          className={`w-6 h-6 rounded-full flex items-center justify-center transition-colors active:scale-90 ${
             vote === 1 ? "text-primary bg-primary-container/30" : "text-outline hover:text-primary hover:bg-primary-container/30"
           }`}
         >
-          <ArrowBigUp className="h-[18px] w-[18px]" />
+          <ArrowBigUp className="h-3.5 w-3.5" />
         </button>
-        <span className={`font-label text-xs font-bold tabular-nums ${
+        <span className={`font-label text-[10px] font-bold tabular-nums text-center ${
           score > 0 ? "text-on-surface" : "text-outline"
         }`}>
           {score}
         </span>
         <button
           onClick={() => handleVote(-1)}
-          className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors active:scale-90 ${
+          className={`w-6 h-6 rounded-full flex items-center justify-center transition-colors active:scale-90 ${
             vote === -1 ? "text-error bg-error-container/30" : "text-outline hover:text-error hover:bg-error-container/30"
           }`}
         >
-          <ArrowBigDown className="h-[18px] w-[18px]" />
+          <ArrowBigDown className="h-3.5 w-3.5" />
         </button>
       </div>
       {showLogin && mounted && createPortal(

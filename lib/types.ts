@@ -52,4 +52,5 @@ export interface LearningFlow {
   quiz: { questions: QuizQuestion[] };
   connectedTopics: ConnectedTopic[];
   category?: string;
+  difficultyScore?: number;
 }

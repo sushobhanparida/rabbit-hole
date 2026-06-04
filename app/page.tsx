@@ -38,6 +38,26 @@ export default function HomePage() {
 
   const scienceIcons = [Rocket, Globe, Atom, Satellite, Microscope, Telescope, FlaskConical]
 
+  const iconColors = [
+    { icon: "text-violet-400/60", bg: "bg-violet-50" },
+    { icon: "text-emerald-400/60", bg: "bg-emerald-50" },
+    { icon: "text-amber-400/60", bg: "bg-amber-50" },
+    { icon: "text-rose-400/60", bg: "bg-rose-50" },
+    { icon: "text-cyan-400/60", bg: "bg-cyan-50" },
+    { icon: "text-orange-400/60", bg: "bg-orange-50" },
+    { icon: "text-sky-400/60", bg: "bg-sky-50" },
+  ]
+
+  const getIconStyle = (title: string) => {
+    let hash = 0
+    for (let i = 0; i < title.length; i++) {
+      hash = ((hash << 5) - hash) + title.charCodeAt(i)
+      hash |= 0
+    }
+    const idx = Math.abs(hash) % iconColors.length
+    return { Icon: scienceIcons[idx % scienceIcons.length], ...iconColors[idx] }
+  }
+
   const getIconForTitle = (title: string) => {
     let hash = 0
     for (let i = 0; i < title.length; i++) {
@@ -122,13 +142,30 @@ export default function HomePage() {
 
             <Section title="Community" fullWidth>
               {loading ? (
-                <div className="glass-card rounded-xl p-5">
-                  <p className="text-xs text-outline">Loading...</p>
+                <div className="flex flex-col gap-2">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="glass-card rounded-xl px-4 py-3 flex items-center gap-3 animate-pulse">
+                      <div className="shrink-0 w-10 h-10 rounded-xl bg-surface-container" />
+                      <div className="flex-1 min-w-0 space-y-2">
+                        <div className="h-3.5 w-32 bg-surface-container rounded" />
+                        <div className="flex items-center gap-2">
+                          <div className="h-4 w-4 rounded-full bg-surface-container" />
+                          <div className="h-4 w-4 rounded-full bg-surface-container" />
+                          <div className="h-2.5 w-20 bg-surface-container rounded" />
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-center gap-px">
+                        <div className="w-6 h-6 rounded-full bg-surface-container" />
+                        <div className="h-2.5 w-4 bg-surface-container rounded" />
+                        <div className="w-6 h-6 rounded-full bg-surface-container" />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               ) : communityTopics.length === 0 ? (
-                <div className="glass-card rounded-xl p-5 flex items-start gap-4 spring-up" style={{ animationDelay: "0.6s" }}>
-                  <div className="w-10 h-10 rounded-full bg-primary-container/30 flex items-center justify-center shrink-0 mt-0.5">
-                    <Users className="h-5 w-5 text-primary" />
+                <div className="glass-card rounded-xl px-4 py-3 flex items-start gap-3 spring-up" style={{ animationDelay: "0.6s" }}>
+                  <div className="w-9 h-9 rounded-full bg-primary-container/30 flex items-center justify-center shrink-0 mt-0.5">
+                    <Users className="h-4 w-4 text-primary" />
                   </div>
                   <div>
                     <p className="text-sm font-medium text-on-surface mb-1">No topics saved by the community yet</p>
@@ -137,12 +174,12 @@ export default function HomePage() {
                 </div>
               ) : (
                 communityTopics.map((topic, i) => (
-                  <div key={topic.topic_id} className="glass-card rounded-xl p-3 flex items-center gap-3 spring-up" style={{ animationDelay: `${0.6 + i * 0.1}s` }}>
-                    <div className="shrink-0 w-10 h-10 rounded-xl bg-primary-container/20 flex items-center justify-center border border-white/40">
-                      {(() => { const Icon = getIconForTitle(topic.title); return <Icon className="h-5 w-5 text-primary" /> })()}
+                  <div key={topic.topic_id} className="glass-card rounded-xl px-4 py-3 flex items-center gap-3 spring-up" style={{ animationDelay: `${0.6 + i * 0.1}s` }}>
+                    <div className="shrink-0 w-10 h-10 rounded-xl flex items-center justify-center border border-white/40">
+                      {(() => { const { Icon, icon, bg } = getIconStyle(topic.title); return <div className={`${bg} w-full h-full rounded-xl flex items-center justify-center`}><Icon className={`h-5 w-5 ${icon}`} /></div> })()}
                     </div>
                     <Link href={`/learn/${topic.topic_id}/cards?title=${encodeURIComponent(topic.title)}`} className="flex-1 min-w-0">
-                      <h3 className="font-heading text-base font-bold text-on-surface truncate" title={topic.title}>
+                      <h3 className="font-heading text-sm font-bold text-on-surface truncate" title={topic.title}>
                         {titleCase(topic.title)}
                       </h3>
                       {/* Avatar stack */}
@@ -165,7 +202,7 @@ export default function HomePage() {
                         </div>
                         <p className="text-xs text-on-surface-variant">
                           {topic.saved_by_name && (
-                            <span className="font-label text-[11px] text-outline">@{topic.saved_by_name.toLowerCase().replace(/\s/g, "")} · </span>
+                            <span className="font-label text-[11px] text-outline">{topic.saved_by_name.toLowerCase().replace(/\s/g, "")} · </span>
                           )}
                           {topic.save_count} {topic.save_count === 1 ? "read" : "read this"}
                         </p>
