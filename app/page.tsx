@@ -137,8 +137,8 @@ export default function HomePage() {
                 </div>
               ) : (
                 communityTopics.map((topic, i) => (
-                  <div key={topic.topic_id} className="glass-card rounded-xl p-4 flex items-center gap-4 spring-up" style={{ animationDelay: `${0.6 + i * 0.1}s` }}>
-                    <div className="shrink-0 w-12 h-12 rounded-xl bg-primary-container/20 flex items-center justify-center border border-white/40">
+                  <div key={topic.topic_id} className="glass-card rounded-xl p-3 flex items-center gap-3 spring-up" style={{ animationDelay: `${0.6 + i * 0.1}s` }}>
+                    <div className="shrink-0 w-10 h-10 rounded-xl bg-primary-container/20 flex items-center justify-center border border-white/40">
                       {(() => { const Icon = getIconForTitle(topic.title); return <Icon className="h-5 w-5 text-primary" /> })()}
                     </div>
                     <Link href={`/learn/${topic.topic_id}/cards?title=${encodeURIComponent(topic.title)}`} className="flex-1 min-w-0">
@@ -146,7 +146,7 @@ export default function HomePage() {
                         {titleCase(topic.title)}
                       </h3>
                       {/* Avatar stack */}
-                      <div className="flex items-center gap-2 mt-1">
+                      <div className="flex items-center gap-2 mt-0.5">
                         <div className="flex">
                           {topic.saved_users?.slice(0, 3).map((u, idx) => (
                             <div
