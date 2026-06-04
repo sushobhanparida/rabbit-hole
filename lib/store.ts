@@ -29,7 +29,7 @@ interface XpBreakdown {
   quizXp: number
   toughBonus: number
   perfectBonus: number
-  difficultyMultiplier: number
+  difficultyXp: number
   total: number
 }
 
@@ -266,8 +266,10 @@ export const useStore = create<AppState>()(
           const perfectBonus = perfect ? 5 : 0
           const difficulty = s.session.flow?.difficultyScore || 5
           const difficultyMultiplier = 0.5 + difficulty / 10
-          const total = Math.round((quizXp + toughBonus + perfectBonus) * difficultyMultiplier)
-          const xpBreakdown = { quizXp, toughBonus, perfectBonus, difficultyMultiplier, total }
+          const rawTotal = quizXp + toughBonus + perfectBonus
+          const total = Math.round(rawTotal * difficultyMultiplier)
+          const difficultyXp = total - rawTotal
+          const xpBreakdown = { quizXp, toughBonus, perfectBonus, difficultyXp, total }
 
           const isRepeat = s.completedTopics.includes(topicId)
           const newXp = isRepeat ? s.xp : s.xp + total

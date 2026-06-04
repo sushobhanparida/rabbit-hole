@@ -94,18 +94,18 @@ export default function HomePage() {
               <Section title="My Collection">
                 {collection.map((item, i) => (
                   <Link key={item.topicId} href={`/learn/${item.topicId}/cards?title=${encodeURIComponent(item.title)}`} className="block spring-up" style={{ animationDelay: `${0.3 + i * 0.1}s` }}>
-                    <div className="glass-card rounded-2xl w-64 shrink-0 p-5 flex flex-col justify-between min-h-[220px] cursor-pointer">
+                    <div className="glass-card rounded-2xl w-56 shrink-0 p-4 flex flex-col justify-between min-h-[180px] cursor-pointer">
                       <div>
-                        <div className="w-10 h-10 rounded-full bg-primary-container/50 flex items-center justify-center mb-4">
-                          {(() => { const Icon = getIconForTitle(item.title); return <Icon className="h-5 w-5 text-primary" /> })()}
+                        <div className="w-9 h-9 rounded-full bg-primary-container/50 flex items-center justify-center mb-3">
+                          {(() => { const Icon = getIconForTitle(item.title); return <Icon className="h-[18px] w-[18px] text-primary" /> })()}
                         </div>
-                        <div className="flex justify-between items-start mb-2">
+                        <div className="flex justify-between items-start mb-1.5">
                           <span className="font-label text-[10px] tracking-[0.1em] uppercase text-primary">{item.category || getCategory(item.title, item.topicId)}</span>
-                          <span className="px-2 py-0.5 rounded-full text-[9px] font-label bg-green-100 text-green-700 uppercase tracking-wider flex items-center gap-1">
+                          <span className="px-1.5 py-0.5 rounded-full text-[9px] font-label bg-green-100 text-green-700 uppercase tracking-wider flex items-center gap-0.5">
                             <span>✓</span> Completed
                           </span>
                         </div>
-                        <h3 className="font-heading text-base font-bold text-on-surface leading-tight line-clamp-2" title={item.title}>
+                        <h3 className="font-heading text-sm font-bold text-on-surface leading-tight line-clamp-2" title={item.title}>
                           {titleCase(item.title)}
                         </h3>
                       </div>

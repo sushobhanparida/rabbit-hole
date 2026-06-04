@@ -129,9 +129,9 @@ export function CompletionScreen({
                 <p className="text-lg font-bold text-[#1a1a1a]">{xpBreakdown.toughBonus + xpBreakdown.perfectBonus > 0 ? `+${xpBreakdown.toughBonus + xpBreakdown.perfectBonus}` : "0"}</p>
                 <p className="text-[10px] text-[#a3a3a3]">Bonus</p>
               </div>
-              {xpBreakdown.difficultyMultiplier !== 1 && (
+              {xpBreakdown.difficultyXp > 0 && (
                 <div className="text-center">
-                  <p className="text-lg font-bold text-[#1a1a1a]">×{xpBreakdown.difficultyMultiplier.toFixed(1)}</p>
+                  <p className="text-lg font-bold text-[#1a1a1a]">+{xpBreakdown.difficultyXp}</p>
                   <p className="text-[10px] text-[#a3a3a3]">Difficulty</p>
                 </div>
               )}

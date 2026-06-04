@@ -15,6 +15,8 @@ const examples = [
   { label: "Why Concorde Failed", query: "concorde" },
   { label: "The Fermi Paradox", query: "fermi-paradox" },
   { label: "How GPS Works", query: "gps" },
+  { label: "AI Harness", query: "ai-harness" },
+  { label: "Science Behind Bonsai Trees", query: "bonsai-trees" },
 ]
 
 export function SearchBar() {
@@ -32,6 +34,8 @@ export function SearchBar() {
 
   const handleExample = (label: string, query: string) => {
     setValue(label)
+    const id = slugify(label)
+    router.push(`/learn/${id}/cards?title=${encodeURIComponent(label)}`)
   }
 
   return (
@@ -47,7 +51,7 @@ export function SearchBar() {
             onChange={(e) => setValue(e.target.value)}
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
-            placeholder="What do you want to learn?"
+            placeholder="Enter a rabbit hole.."
             className="absolute inset-[0.5px] pl-12 pr-20 py-0 bg-transparent rounded-2xl border border-transparent focus:outline-none transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] text-base text-on-surface placeholder:text-outline-variant z-10"
           />
           <button
