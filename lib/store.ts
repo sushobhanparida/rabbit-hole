@@ -22,6 +22,7 @@ interface LearningSession {
   maxCardReached: number
   startTime: number
   xpBreakdown?: XpBreakdown
+  retryCount: number
 }
 
 interface XpBreakdown {
@@ -100,6 +101,7 @@ const defaultSession: LearningSession = {
   totalCards: 0,
   maxCardReached: 0,
   startTime: 0,
+  retryCount: 0,
 }
 
 export const useStore = create<AppState>()(
@@ -207,7 +209,7 @@ export const useStore = create<AppState>()(
 
       retry: () =>
         set((s) => ({
-          session: { ...s.session, phase: "generating", errorMessage: "" },
+          session: { ...s.session, phase: "generating", errorMessage: "", flow: null, retryCount: s.session.retryCount + 1 },
         })),
 
       nextCard: () =>

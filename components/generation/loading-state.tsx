@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion"
 
 interface LoadingStateProps {
   stage?: "research" | "generating"
+  onTimeoutRetry?: () => void
 }
 
 const researchMessages = [
@@ -52,8 +53,15 @@ function AnimatedMessage({ messages }: { messages: string[] }) {
   )
 }
 
-export function LoadingState({ stage = "generating" }: LoadingStateProps) {
+export function LoadingState({ stage = "generating", onTimeoutRetry }: LoadingStateProps) {
   const isResearch = stage === "research"
+  const [showRetry, setShowRetry] = useState(false)
+
+  useEffect(() => {
+    if (!onTimeoutRetry) return
+    const timer = setTimeout(() => setShowRetry(true), 15000)
+    return () => clearTimeout(timer)
+  }, [onTimeoutRetry])
 
   return (
     <div className="flex flex-col min-h-[calc(100dvh-170px)]">
@@ -73,6 +81,14 @@ export function LoadingState({ stage = "generating" }: LoadingStateProps) {
           Entering rabbit hole..
         </p>
         <AnimatedMessage messages={isResearch ? researchMessages : generatingMessages} />
+        {showRetry && onTimeoutRetry && (
+          <button
+            onClick={onTimeoutRetry}
+            className="mt-6 text-xs text-[#a3a3a3] underline underline-offset-2 hover:text-[#737373] transition-colors"
+          >
+            Taking too long? Try again
+          </button>
+        )}
       </div>
       <p className="text-center text-[11px] text-[#c0c0c0] pb-6">Prototype stage — responses might take 5–10 seconds</p>
     </div>

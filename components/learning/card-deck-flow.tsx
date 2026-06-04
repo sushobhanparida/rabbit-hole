@@ -125,7 +125,10 @@ export function CardDeckFlow({ initialTitle }: CardDeckFlowProps) {
     }
 
     load()
-  }, [topicId, title, description])
+
+    // Cleanup on unmount
+    return () => { generating.current = false }
+  }, [topicId, title, description, session.retryCount])
 
   const allCards = useMemo((): CardData[] => {
     if (!session.flow) return []
@@ -162,7 +165,7 @@ export function CardDeckFlow({ initialTitle }: CardDeckFlowProps) {
   }
 
   if (session.phase === "generating") {
-    return <LoadingState stage="generating" />
+    return <LoadingState stage="generating" onTimeoutRetry={retry} />
   }
 
   if (session.phase === "error") {
