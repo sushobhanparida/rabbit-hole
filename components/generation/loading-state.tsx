@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { AppLogo } from "@/components/ui/app-logo"
 
 interface LoadingStateProps {
   stage?: "research" | "generating"
@@ -69,9 +68,13 @@ export function LoadingState({ stage = "generating", onTimeoutRetry }: LoadingSt
         <motion.div
           animate={{ scale: [1, 1.08, 1] }}
           transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-          className="w-14 h-14 rounded-full bg-[#f8f8f8] flex items-center justify-center mb-5 border border-[#f0f0f0]"
+          className="w-14 h-14 rounded-full bg-[#f8f8f8] flex items-center justify-center mb-5 border border-[#f0f0f0] overflow-hidden"
         >
-          <AppLogo className="w-7 h-7 text-[#1a1a1a]" />
+          <img
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIaUb3GN5u3RO_h5GHzXAPM4rDRLX-K3gwy3jx_waQC44FXyKsKUJfzTef5dVI_jlhODKYgR3vaNrO0-pmOyuNj__UzOkggXReRn1FQMWAI3IePSj-Eo24trhwLzZpLpHzevZQ4d9c5g4eM5IgZKD6aKa5Pjm6hM50JVzJwsotnPY6V08cYMUjJ_3XPRlNiM4cduRkcoYTWKrS0UQSGpMD99SwXHc8IQWGU7k3d_4H0B3ZFXPEjohAV2OA-XmmnIZrYdyAzyhPtno"
+            alt="Rabbit Hole"
+            className="h-8 w-auto"
+          />
         </motion.div>
         <p className="font-heading text-xl font-bold text-on-surface mb-2">
           Entering rabbit hole..
