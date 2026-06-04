@@ -40,3 +40,5 @@ netlify.env
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+.vercel

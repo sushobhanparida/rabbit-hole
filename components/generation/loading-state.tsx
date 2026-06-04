@@ -1,8 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Search, Sparkles } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
+import { AppLogo } from "@/components/ui/app-logo"
 
 interface LoadingStateProps {
   stage?: "research" | "generating"
@@ -67,15 +67,11 @@ export function LoadingState({ stage = "generating", onTimeoutRetry }: LoadingSt
     <div className="flex flex-col min-h-[calc(100dvh-170px)]">
       <div className="flex-1 flex flex-col items-center justify-center px-8 text-center">
         <motion.div
-          animate={isResearch ? { rotate: [0, 360] } : { scale: [1, 1.08, 1] }}
-          transition={{ duration: isResearch ? 3 : 2, repeat: Infinity, ease: "linear" }}
+          animate={{ scale: [1, 1.08, 1] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
           className="w-14 h-14 rounded-full bg-[#f8f8f8] flex items-center justify-center mb-5 border border-[#f0f0f0]"
         >
-          {isResearch ? (
-            <Search className="h-6 w-6 text-[#1a1a1a]" />
-          ) : (
-            <Sparkles className="h-6 w-6 text-[#1a1a1a]" />
-          )}
+          <AppLogo className="w-7 h-7 text-[#1a1a1a]" />
         </motion.div>
         <p className="font-heading text-xl font-bold text-on-surface mb-2">
           Entering rabbit hole..
