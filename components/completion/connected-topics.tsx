@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { ConnectedTopic } from "@/lib/types"
-import { ArrowUpRight } from "lucide-react"
+import { ArrowUpRight, Sparkles } from "lucide-react"
 
 interface ConnectedTopicsProps {
   topics: ConnectedTopic[]
@@ -20,7 +20,7 @@ export function ConnectedTopics({ topics }: ConnectedTopicsProps) {
         {topics.map((topic) => (
           <Link
             key={topic.id}
-            href={`/learn/${topic.id}/cards`}
+            href={`/learn/${encodeURIComponent(topic.id)}/cards?title=${encodeURIComponent(topic.title)}`}
             className="flex items-center justify-between w-full p-4 rounded-[16px] border border-[#e4e4e4] bg-white hover:border-[#1a1a1a] transition-colors group"
           >
             <div className="flex-1 min-w-0">
@@ -37,6 +37,10 @@ export function ConnectedTopics({ topics }: ConnectedTopicsProps) {
           </Link>
         ))}
       </div>
+      <p className="flex items-center gap-1.5 mt-4 text-[11px] text-[#b0b0b0] leading-relaxed">
+        <Sparkles className="h-3 w-3 shrink-0" />
+        AI-suggested connections — some may be off or surface-level
+      </p>
     </div>
   )
 }

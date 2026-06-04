@@ -25,8 +25,8 @@ export async function searchTopic(query: string): Promise<TavilyResponse | null>
       body: JSON.stringify({
         api_key: apiKey,
         query,
-        search_depth: "advanced",
-        include_answer: true,
+        search_depth: "basic",
+        include_answer: false,
         include_images: true,
         max_results: 5,
       }),

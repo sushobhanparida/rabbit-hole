@@ -83,6 +83,7 @@ interface AppState {
   completeSession: () => void
   resetSession: () => void
   cacheFlow: (topicId: string, flow: LearningFlow) => void
+  setCategory: (category: string) => void
 }
 
 const defaultSession: LearningSession = {
@@ -322,6 +323,13 @@ export const useStore = create<AppState>()(
           session: { ...defaultSession },
         })),
 
+      setCategory: (category) =>
+        set((s) => ({
+          session: s.session.flow
+            ? { ...s.session, flow: { ...s.session.flow, category } }
+            : s.session,
+        })),
+
       cacheFlow: (topicId, flow) =>
         set((s) => {
           syncFlow({
@@ -330,7 +338,6 @@ export const useStore = create<AppState>()(
             cards: flow.cards,
             quiz: flow.quiz,
             connectedTopics: flow.connectedTopics,
-            source: "template",
           })
           return {
             flowCache: { ...s.flowCache, [topicId]: flow },

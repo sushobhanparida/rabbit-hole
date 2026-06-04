@@ -3,7 +3,7 @@ import { classifyByKeywords, classifyPrompt, BROAD_CATEGORIES } from "@/lib/cate
 import type { BroadCategory } from "@/lib/categories"
 
 const NIM_API_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
-const MODEL = "microsoft/phi-4-mini-instruct"
+const MODEL = "mistralai/mistral-small-4-119b-2603"
 
 const cache = new Map<string, BroadCategory>()
 

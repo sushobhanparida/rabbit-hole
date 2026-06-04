@@ -1,66 +1,54 @@
-import type { TavilyResult } from "./tavily"
-
 export function buildCardsPrompt(): string {
-  return `You generate educational content cards as JSON. Return ONLY valid JSON.
+  return `You generate educational overviews as cards, similar to Google's AI Mode — comprehensive, well-structured, and source-backed. Return ONLY valid JSON.
 
 Format:
-{"cards":[{"id":"c1","type":"hook|fact|timeline|diagram|comparison|prediction|poll|question","title":"Title","body":"Markdown body with **bold** and *italic*. Separate paragraphs with blank lines. End with **Sources** line.","options":["A","B","C","D"],"correctIndex":0,"explanation":"Why correct","events":[{"date":"1969","label":"First flight","description":"Details"}],"comparisonA":"Item A","comparisonB":"Item B","labelA":"Then","labelB":"Now","diagramLabels":["Label 1"],"fact":"Optional callout"}],"connectedTopics":[{"id":"slug","title":"Title","description":"Brief","relationship":"Related|Deeper Dive"}]}
+{"cards":[{"id":"c1","title":"Compelling Title","body":"~150 words max of rich markdown body with key terms. Use double newlines (\\n\\n) between each paragraph."}],"quiz":{"questions":[{"id":"q1","question":"Question text","options":["A","B","C","D"],"correctIndex":2,"explanation":"Why correct (markdown allowed)"}]},"connectedTopics":[{"id":"slug","title":"Topic Name","description":"Brief why this connects","relationship":"Subtopic|Prerequisite|Related|Deeper Dive"}]}
 
 RULES:
-4-8 cards, first is "hook". Each body 100+ words. Omit image field if unsure.
-Use **bold** for key terms. Reference specific data from the research.`
-}
+- 5 cards, each with a distinct angle on the topic (e.g. history, mechanics, impact, controversies, future)
+- Each body 150 words max — keep it tight but substantive
+- **IMPORTANT: Use \\n\\n between paragraphs.** Every paragraph must be separated by a blank line.
+- Quiz: randomize correctIndex across 0-3, never always pick the first option
 
-export function buildQuizPrompt(cardsContext: string): string {
-  return `Generate 3 quiz questions based on this educational content. Return ONLY valid JSON.
-
-Format:
-{"questions":[{"id":"q1","question":"Question text","options":["A","B","C","D"],"correctIndex":0,"explanation":"Why correct (markdown allowed)"}]}
-
-Content to base questions on:
-${cardsContext}
-
-RULES:
-- 3 questions with well-crafted distractors
-- Each explanation must say why correct and why each wrong answer is wrong
+- Cards should feel like Google AI Mode overviews — comprehensive standalone sections
+- Generate 3 quiz questions that test genuine understanding
 - Return ONLY valid JSON — no other text, no markdown fences`
 }
 
-export function buildResearchContext(
+export function buildUserPrompt(
   title: string,
-  wikipediaExtract: string | null,
-  searchResults: TavilyResult[]
+  description: string,
+  context?: string
 ): string {
-  let context = `Research: ${title}\n`
-
-  if (wikipediaExtract) {
-    context += `${wikipediaExtract.slice(0, 400)}\n`
-  }
-
-  if (searchResults.length > 0) {
-    for (const r of searchResults.slice(0, 2)) {
-      context += `- ${r.title}: ${r.content.slice(0, 200)}\n`
-    }
-  }
-
-  return context
-}
-
-export function buildUserPrompt(title: string, description: string, context?: string): string {
   if (context) {
-    return `Generate learning cards about: "${title}"
+    return `Topic: "${title}"
 
 ${description}
 
 Research:
 ${context}
 
-4-8 rich cards (100+ words each). End each body with **Sources**. Return ONLY valid JSON.`
+Generate exactly 5 rich cards (150 words max each) covering distinct angles of this topic. Also generate 3 quiz questions and 4+ connected topics. Return ONLY valid JSON.`
   }
 
-  return `Generate learning cards about: "${title}"
+  return `Topic: "${title}"
 
 ${description}
 
-4-8 rich cards. Return ONLY valid JSON.`
+Generate exactly 5 rich cards (150 words max each) covering distinct angles of this topic. Also generate 3 quiz questions and 4+ connected topics. Return ONLY valid JSON.`
+}
+
+export function buildResearchContext(
+  title: string,
+  searchResults: { title: string; content: string; url: string; score: number }[]
+): string {
+  let context = `Research: ${title}\n`
+
+  if (searchResults.length > 0) {
+    for (const r of searchResults.slice(0, 3)) {
+      context += `- ${r.title}: ${r.content.slice(0, 300)}\n`
+    }
+  }
+
+  return context
 }

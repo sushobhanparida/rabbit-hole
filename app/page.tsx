@@ -81,8 +81,8 @@ export default function HomePage() {
                         </div>
                         <div className="flex justify-between items-start mb-2">
                           <span className="font-label text-[10px] tracking-[0.1em] uppercase text-primary">{item.category || getCategory(item.title, item.topicId)}</span>
-                          <span className="px-2 py-0.5 rounded-full text-[9px] font-label bg-secondary-container/30 text-secondary uppercase tracking-wider">
-                            {item.score}/{item.total}
+                          <span className="px-2 py-0.5 rounded-full text-[9px] font-label bg-green-100 text-green-700 uppercase tracking-wider flex items-center gap-1">
+                            <span>✓</span> Completed
                           </span>
                         </div>
                         <h3 className="font-heading text-base font-bold text-on-surface leading-tight line-clamp-2" title={item.title}>

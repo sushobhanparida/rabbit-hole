@@ -18,29 +18,13 @@ export interface Topic {
   saved?: boolean;
 }
 
-export interface TimelineEvent {
-  date: string;
-  label: string;
-  description?: string;
-}
-
 export interface CardContent {
   id: string;
-  type: "hook" | "fact" | "timeline" | "diagram" | "comparison" | "prediction" | "poll" | "question";
   title: string;
   body: string;
   image?: string;
   imageAlt?: string;
   imageSource?: string;
-  visualDescription?: string;
-  fact?: string;
-  source?: string;
-  events?: TimelineEvent[];
-  diagramLabels?: string[];
-  comparisonA?: string;
-  comparisonB?: string;
-  labelA?: string;
-  labelB?: string;
   options?: string[];
   correctIndex?: number;
   explanation?: string;

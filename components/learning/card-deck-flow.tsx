@@ -4,10 +4,11 @@ import { useEffect, useState, useMemo, useCallback, useRef } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { useStore } from "@/lib/store"
-import { generateInstantFlow, generateCards, generateQuiz } from "@/lib/generator"
+import { generateInstantFlow } from "@/lib/generator"
 import { topics } from "@/lib/mock-data"
 import type { CardContent as CardData, LearningFlow } from "@/lib/types"
 import { CardContent } from "./card-content"
+import { CardFooter } from "./card-footer"
 import { CardHeader } from "./card-header"
 import { LoadingState } from "@/components/generation/loading-state"
 import { ErrorState } from "@/components/generation/error-state"
@@ -41,7 +42,6 @@ export function CardDeckFlow({ initialTitle }: CardDeckFlowProps) {
   const addRecentTopic = useStore((s) => s.addRecentTopic)
   const router = useRouter()
 
-  const [loadingStage, setLoadingStage] = useState<"research" | "generating">("research")
   const [quizAnswers, setQuizAnswers] = useState<Record<string, number>>({})
   const [quizCards, setQuizCards] = useState<CardData[]>([])
 
@@ -52,7 +52,6 @@ export function CardDeckFlow({ initialTitle }: CardDeckFlowProps) {
       const correctIndex = validOptions.length >= 2 ? valid.findIndex((o) => o.origIdx === q.correctIndex) : 0
       return {
         id: `quiz-${q.id || i}`,
-        type: "question" as const,
         title: `Quiz ${i + 1}`,
         body: q.question && !q.question.includes("NaN") ? q.question : `What did you learn about this topic?`,
         options: validOptions.length >= 2 ? validOptions : ["It was covered in the cards", "It was not mentioned", "I need to review again", "I understand it well"],
@@ -93,62 +92,35 @@ export function CardDeckFlow({ initialTitle }: CardDeckFlowProps) {
       return
     }
 
-    setLoadingStage("research")
     startGeneration(topicId, title)
-
     generating.current = true
 
     const load = async () => {
-      // Phase 1: instant template content (3-5 seconds)
       const instant = await generateInstantFlow(topicId, title, description)
+      if (!generating.current) return
+
       if (instant.data) {
         setFlow(instant.data)
         cacheFlow(topicId, instant.data)
         setQuizCards(buildQuizCards(instant.data.quiz))
-      }
-      if (!generating.current) return
 
-      // Phase 2: try NVIDIA for enhanced cards (background — non-critical)
-      setLoadingStage("generating")
-      try {
-        const cardsResult = await generateCards(topicId, title, description)
-        const templateCardCount = useStore.getState().session.flow?.cards.length || 0
-        if (cardsResult.data && cardsResult.data.cards.length >= templateCardCount && generating.current) {
-          const currentFlow = useStore.getState().session.flow
-          const enhancedFlow: LearningFlow = {
-            cards: cardsResult.data.cards,
-            connectedTopics: cardsResult.data.connectedTopics,
-            quiz: currentFlow?.quiz || { questions: [] },
-            topicId,
-          }
-          setFlow(enhancedFlow)
-
-          // Phase 3: generate quiz in background
-          try {
-            const cardBodies = cardsResult.data.cards.map((c) => `- ${c.title || "Card"}: ${(c.body || "").slice(0, 200)}`).join("\n")
-            const quizResult = await generateQuiz(title, cardBodies)
-            if (quizResult.data?.questions && generating.current) {
-              const finalFlow = useStore.getState().session.flow
-              if (finalFlow) {
-                const fullFlow: LearningFlow = { ...finalFlow, quiz: { questions: quizResult.data.questions } }
-                setFlow(fullFlow)
-                cacheFlow(topicId, fullFlow)
-              }
-              setQuizCards(buildQuizCards(quizResult.data))
+        // Fetch category in background — non-blocking
+        fetch("/api/category", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title, topicId }),
+        })
+          .then((r) => r.json())
+          .then((data) => {
+            if (data?.category) {
+              useStore.getState().setCategory?.(data.category)
             }
-          } catch {
-            // Quiz generation failed — template quiz is fine
-          }
-        }
-      } catch {
-        // NVIDIA failed — template content is already showing
+          })
+          .catch(() => {})
+      } else {
+        setError(instant.error || "Failed to generate content")
       }
 
-      // Cache whatever we have
-      if (!useStore.getState().flowCache[topicId]) {
-        const currentFlow = useStore.getState().session.flow
-        if (currentFlow) cacheFlow(topicId, currentFlow)
-      }
       generating.current = false
     }
 
@@ -190,7 +162,7 @@ export function CardDeckFlow({ initialTitle }: CardDeckFlowProps) {
   }
 
   if (session.phase === "generating") {
-    return <LoadingState stage={loadingStage} />
+    return <LoadingState stage="generating" />
   }
 
   if (session.phase === "error") {
@@ -268,28 +240,29 @@ export function CardDeckFlow({ initialTitle }: CardDeckFlowProps) {
           </div>
         </div>
 
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => prevCard()}
-              disabled={isFirstCard}
-              className="group bg-[#0D0D0D] hover:bg-[#1a1a1a] disabled:opacity-30 disabled:cursor-not-allowed rounded-full px-5 py-3 flex items-center gap-2 pointer-events-auto text-white transition-all active:scale-[0.97]"
-            >
-              <ChevronLeft className="h-4 w-4 transition-transform duration-200 group-hover:-translate-x-0.5" />
-              <span className="font-heading text-sm font-bold">Back</span>
-            </button>
-            <button
-              onClick={isLastCard ? finishWithCompletion : handleNext}
-              disabled={!canGoNext}
-              className={`group rounded-full px-5 py-3 flex items-center gap-2 pointer-events-auto transition-all active:scale-[0.97] ${
-                canGoNext
-                  ? "bg-[#0D0D0D] text-white hover:bg-[#1a1a1a]"
-                  : "bg-[#f0f0f0] text-[#a3a3a3] cursor-not-allowed"
-              }`}
-            >
-              <span className="font-heading text-sm font-bold whitespace-nowrap">{isLastCard ? "See Results" : "Next"}</span>
-              <ChevronRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
-            </button>
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 w-[400px] max-w-[calc(100vw-40px)] pointer-events-none">
+          <div className="flex items-end justify-between gap-2">
+            <CardFooter narrationState={narrationState} onToggleNarration={() => toggleNarration(narrationText)} onRestartNarration={() => restartNarration()} listeningMinutes={listeningMinutes} />
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => prevCard()}
+                disabled={isFirstCard}
+                className="w-9 h-9 rounded-full bg-[#0D0D0D] flex items-center justify-center pointer-events-auto text-white disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[#1a1a1a] transition-all active:scale-[0.92]"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+              <button
+                onClick={isLastCard ? finishWithCompletion : handleNext}
+                disabled={!canGoNext}
+                className={`w-9 h-9 rounded-full flex items-center justify-center pointer-events-auto transition-all active:scale-[0.92] ${
+                  canGoNext
+                    ? "bg-[#0D0D0D] text-white hover:bg-[#1a1a1a]"
+                    : "bg-[#f0f0f0] text-[#a3a3a3] cursor-not-allowed"
+                }`}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -304,7 +277,7 @@ export function CardDeckFlow({ initialTitle }: CardDeckFlowProps) {
         score={session.quizScore}
         total={session.quizTotal}
         connectedTopics={session.flow.connectedTopics}
-        onRestart={resetSession}
+        onRestart={() => { resetSession(); router.push("/") }}
       />
     )
   }

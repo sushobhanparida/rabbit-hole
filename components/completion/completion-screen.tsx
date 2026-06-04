@@ -126,7 +126,7 @@ export function CompletionScreen({
               <p className="text-[10px] text-[#a3a3a3]">Quiz</p>
             </div>
             <div className="text-center">
-              <p className="text-lg font-bold text-[#1a1a1a]">+{xpBreakdown.toughBonus + xpBreakdown.perfectBonus}</p>
+              <p className="text-lg font-bold text-[#1a1a1a]">{xpBreakdown.toughBonus + xpBreakdown.perfectBonus > 0 ? `+${xpBreakdown.toughBonus + xpBreakdown.perfectBonus}` : "0"}</p>
               <p className="text-[10px] text-[#a3a3a3]">Bonus</p>
             </div>
             <div className="w-px h-10 bg-[#e4e4e4]" />
@@ -188,7 +188,7 @@ export function CompletionScreen({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
-              className="fixed inset-0 bg-black/40 z-40"
+               className="fixed inset-0 bg-black/40 z-[100]"
               onClick={() => setShowLogin(false)}
             />
             <motion.div
@@ -196,7 +196,7 @@ export function CompletionScreen({
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-x-4 top-[20%] mx-auto max-w-sm bg-white rounded-[24px] z-50 p-6 shadow-xl border border-[#f0f0f0]"
+              className="fixed inset-x-4 top-[20%] mx-auto max-w-sm bg-white rounded-[24px] z-[101] p-6 shadow-xl border border-[#f0f0f0]"
             >
               <div className="flex items-center justify-between mb-5">
                 <h2 className="text-lg font-semibold text-[#1a1a1a]">Create account</h2>

@@ -70,10 +70,11 @@ export function LoadingState({ stage = "generating" }: LoadingStateProps) {
           )}
         </motion.div>
         <p className="font-heading text-xl font-bold text-on-surface mb-2">
-          {isResearch ? "Entering rabbit hole.." : "Crafting your learning flow..."}
+          Entering rabbit hole..
         </p>
         <AnimatedMessage messages={isResearch ? researchMessages : generatingMessages} />
       </div>
+      <p className="text-center text-[11px] text-[#c0c0c0] pb-6">Prototype stage — responses might take 5–10 seconds</p>
     </div>
   )
 }

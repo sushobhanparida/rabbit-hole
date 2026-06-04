@@ -1,13 +1,16 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { createPortal } from "react-dom"
 import { useStore } from "@/lib/store"
 import { LogIn, X } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion } from "framer-motion"
 
 export function LoginDialog() {
   const login = useStore((s) => s.login)
   const [open, setOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => { setMounted(true) }, [])
   const [mode, setMode] = useState<"signup" | "login">("signup")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -64,85 +67,82 @@ export function LoginDialog() {
         Login
       </button>
 
-      <AnimatePresence>
-        {open && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.15 }}
-              className="fixed inset-0 bg-black/40 z-40"
-              onClick={() => setOpen(false)}
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-x-4 top-[15%] mx-auto max-w-sm bg-white rounded-[24px] z-50 p-6 shadow-xl border border-[#f0f0f0]"
-            >
-              <div className="flex items-center justify-between mb-5">
-                <h2 className="text-lg font-semibold text-[#1a1a1a]">
-                  {mode === "signup" ? "Sign up" : "Log in"}
-                </h2>
-                <button
-                  onClick={() => setOpen(false)}
-                  className="text-[#a3a3a3] hover:text-[#1a1a1a] transition-colors"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
-
-              <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-                {mode === "signup" && (
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Your name"
-                    required
-                    className="w-full h-12 px-4 bg-[#f8f8f8] border border-[#e4e4e4] rounded-[16px] text-sm text-[#1a1a1a] placeholder:text-[#a3a3a3] focus:outline-none focus:border-[#1a1a1a] focus:bg-white transition-all"
-                  />
-                )}
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Email address"
-                  required
-                  className="w-full h-12 px-4 bg-[#f8f8f8] border border-[#e4e4e4] rounded-[16px] text-sm text-[#1a1a1a] placeholder:text-[#a3a3a3] focus:outline-none focus:border-[#1a1a1a] focus:bg-white transition-all"
-                />
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Password"
-                  required
-                  className="w-full h-12 px-4 bg-[#f8f8f8] border border-[#e4e4e4] rounded-[16px] text-sm text-[#1a1a1a] placeholder:text-[#a3a3a3] focus:outline-none focus:border-[#1a1a1a] focus:bg-white transition-all"
-                />
-                {error && (
-                  <p className="text-xs text-red-500 mt-0.5">{error}</p>
-                )}
-                <button
-                  type="submit"
-                  disabled={syncing}
-                  className="w-full h-12 mt-1 bg-[#1a1a1a] text-white rounded-[24px] text-sm font-medium hover:bg-[#333] transition-colors active:scale-[0.97] disabled:opacity-50"
-                >
-                  {syncing ? "Please wait..." : mode === "signup" ? "Create account" : "Log in"}
-                </button>
-              </form>
-
+      {open && mounted && createPortal(
+        <>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.15 }}
+            className="fixed inset-0 bg-black/40 z-[100]"
+            onClick={() => setOpen(false)}
+          />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-x-4 top-[15%] mx-auto max-w-sm bg-white rounded-[24px] z-[101] p-6 shadow-xl border border-[#f0f0f0]"
+          >
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-lg font-semibold text-[#1a1a1a]">
+                {mode === "signup" ? "Sign up" : "Log in"}
+              </h2>
               <button
-                onClick={switchMode}
-                className="w-full text-xs text-[#a3a3a3] text-center mt-4 hover:text-[#525252] transition-colors"
+                onClick={() => setOpen(false)}
+                className="text-[#a3a3a3] hover:text-[#1a1a1a] transition-colors"
               >
-                {mode === "signup" ? "Already have an account? Log in" : "Don't have an account? Sign up"}
+                <X className="h-5 w-5" />
               </button>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+            </div>
+
+            <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+              {mode === "signup" && (
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Your name"
+                  required
+                  className="w-full h-12 px-4 bg-[#f8f8f8] border border-[#e4e4e4] rounded-[16px] text-sm text-[#1a1a1a] placeholder:text-[#a3a3a3] focus:outline-none focus:border-[#1a1a1a] focus:bg-white transition-all"
+                />
+              )}
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Email address"
+                required
+                className="w-full h-12 px-4 bg-[#f8f8f8] border border-[#e4e4e4] rounded-[16px] text-sm text-[#1a1a1a] placeholder:text-[#a3a3a3] focus:outline-none focus:border-[#1a1a1a] focus:bg-white transition-all"
+              />
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Password"
+                required
+                className="w-full h-12 px-4 bg-[#f8f8f8] border border-[#e4e4e4] rounded-[16px] text-sm text-[#1a1a1a] placeholder:text-[#a3a3a3] focus:outline-none focus:border-[#1a1a1a] focus:bg-white transition-all"
+              />
+              {error && (
+                <p className="text-xs text-red-500 mt-0.5">{error}</p>
+              )}
+              <button
+                type="submit"
+                disabled={syncing}
+                className="w-full h-12 mt-1 bg-[#1a1a1a] text-white rounded-[24px] text-sm font-medium hover:bg-[#333] transition-colors active:scale-[0.97] disabled:opacity-50"
+              >
+                {syncing ? "Please wait..." : mode === "signup" ? "Create account" : "Log in"}
+              </button>
+            </form>
+
+            <button
+              onClick={switchMode}
+              className="w-full text-xs text-[#a3a3a3] text-center mt-4 hover:text-[#525252] transition-colors"
+            >
+              {mode === "signup" ? "Already have an account? Log in" : "Don't have an account? Sign up"}
+            </button>
+          </motion.div>
+        </>,
+        document.body
+      )}
     </>
   )
 }
