@@ -231,9 +231,6 @@ export function CardDeckFlow({ initialTitle }: CardDeckFlowProps) {
                     onSelectAnswer={
                       isQuizCard ? (idx) => handleQuizSelect(currentCard.id, idx) : undefined
                     }
-                    narrationState={narrationState}
-                    onToggleNarration={() => toggleNarration(narrationText)}
-                    onRestartNarration={() => restartNarration()}
                   />
               </motion.div>
             </AnimatePresence>
