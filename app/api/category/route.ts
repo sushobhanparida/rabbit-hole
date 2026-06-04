@@ -2,27 +2,26 @@ import { NextRequest, NextResponse } from "next/server"
 import { classifyByKeywords, classifyPrompt, BROAD_CATEGORIES } from "@/lib/categories"
 import type { BroadCategory } from "@/lib/categories"
 
-const NIM_API_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
-const MODEL = "mistralai/mistral-small-4-119b-2603"
+const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
 
 const cache = new Map<string, BroadCategory>()
 
-async function classifyViaNIM(title: string, apiKey: string): Promise<BroadCategory | null> {
+async function classifyViaGemini(title: string, apiKey: string): Promise<BroadCategory | null> {
   try {
-    const response = await fetch(NIM_API_URL, {
+    const response = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: MODEL,
-        messages: [
-          { role: "system", content: "You classify topics into broad categories. Return ONLY the category name, no other text." },
-          { role: "user", content: classifyPrompt(title) },
+        contents: [
+          {
+            role: "user",
+            parts: [{ text: `You classify topics into broad categories. Return ONLY the category name, no other text.\n\n${classifyPrompt(title)}` }],
+          },
         ],
-        temperature: 0.1,
-        max_tokens: 32,
+        generationConfig: {
+          temperature: 0.1,
+          maxOutputTokens: 32,
+        },
       }),
       signal: AbortSignal.timeout(10000),
     })
@@ -30,7 +29,7 @@ async function classifyViaNIM(title: string, apiKey: string): Promise<BroadCateg
     if (!response.ok) return null
 
     const data = await response.json()
-    const content: string = data.choices?.[0]?.message?.content?.trim()
+    const content: string = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim()
 
     if (!content) return null
 
@@ -63,12 +62,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, category: cached })
     }
 
-    const apiKey = process.env.NVIDIA_NIM_API_KEY
+    const apiKey = process.env.GEMINI_API_KEY
 
     let category: BroadCategory | null = null
 
     if (apiKey) {
-      category = await classifyViaNIM(title, apiKey)
+      category = await classifyViaGemini(title, apiKey)
     }
 
     if (!category) {

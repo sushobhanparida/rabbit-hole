@@ -4,8 +4,7 @@ import { matchImagesToCards, sourceLinks, extractTopics, pickImage } from "@/lib
 import { buildCardsPrompt, buildUserPrompt, buildResearchContext } from "@/lib/prompts";
 import type { CardContent, QuizQuestion, ConnectedTopic, LearningFlow } from "@/lib/types";
 
-const NIM_API_URL = "https://integrate.api.nvidia.com/v1/chat/completions";
-const MODEL = "mistralai/mistral-small-4-119b-2603";
+const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 
 function normalizeCards(cards: any[]): CardContent[] {
   for (const card of cards) {
@@ -109,32 +108,32 @@ function balanceJson(s: string): string {
   return s + close
 }
 
-async function callNIM(systemPrompt: string, userPrompt: string, apiKey: string) {
-  const response = await fetch(NIM_API_URL, {
+async function callGemini(systemPrompt: string, userPrompt: string, apiKey: string) {
+  const response = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: MODEL,
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt },
+      contents: [
+        {
+          role: "user",
+          parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }],
+        },
       ],
-      temperature: 0.1,
-      max_tokens: 6144,
+      generationConfig: {
+        temperature: 0.1,
+        maxOutputTokens: 6144,
+      },
     }),
     signal: AbortSignal.timeout(120000),
   });
 
   if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(`NIM API error (${response.status}): ${errorText}`);
+    throw new Error(`Gemini API error (${response.status}): ${errorText}`);
   }
 
   const data = await response.json();
-  const content = data.choices?.[0]?.message?.content;
+  const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
   if (!content) {
     throw new Error("Empty response from model");
@@ -158,15 +157,15 @@ export async function POST(request: NextRequest) {
     const researchContext = buildResearchContext(title, searchResults);
     const hasResearch = researchContext.trim().split("\n").length > 2;
 
-    const apiKey = process.env.NVIDIA_NIM_API_KEY;
+    const apiKey = process.env.GEMINI_API_KEY;
 
     if (apiKey) {
-      // NVIDIA path — generate cards + quiz + connected topics in one call
+      // Gemini path — generate cards + quiz + connected topics in one call
       const userPrompt = hasResearch
         ? buildUserPrompt(title, description || `Learn about ${title}`, researchContext)
         : buildUserPrompt(title, description || `Learn about ${title}`);
 
-      const generated = await callNIM(buildCardsPrompt(), userPrompt, apiKey);
+      const generated = await callGemini(buildCardsPrompt(), userPrompt, apiKey);
 
       // Parse cards
       let cards: CardContent[] = generated.cards || [];
